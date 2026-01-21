@@ -201,7 +201,26 @@
                 </div>
             </div>
         </div>
+<!-- PRO GET PLAN BUTTON - ADD THIS AFTER NOTIFICATION BUT BEFORE PROFILE -->
+<button onclick="showPlanModal()"
+        class="px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
+               text-white text-sm font-semibold rounded-lg hover:shadow-md 
+               transition-all duration-300 hidden sm:flex items-center gap-2">
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+    </svg>
+    Get Pro
+</button>
 
+<!-- MOBILE GET PLAN BUTTON -->
+<button onclick="showPlanModal()"
+        class="sm:hidden flex items-center justify-center w-10 h-10 
+               bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
+               text-white rounded-lg">
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+    </svg>
+</button>
         <!-- PROFILE -->
         <a href="{{ route('profile') }}" class="hidden sm:flex items-center gap-3">
             <div class="text-right">
@@ -330,5 +349,316 @@ function notificationDrawer() {
             return Math.floor(diff / 1440) + ' days ago';
         }
     }
+}
+</script>
+<script>
+function showPlanModal() {
+    console.log('showPlanModal called');
+    
+    // Create modal HTML if not exists
+    if (!document.getElementById('planModal')) {
+        console.log('Creating modal HTML');
+        const modalHTML = `
+            <div id="planModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
+                <div class="bg-white rounded-xl max-w-sm w-full shadow-2xl animate-fadeIn border border-gray-200 mx-4">
+                    {{-- MODAL HEADER --}}
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl border-b">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">Pro Plan</h3>
+                                <p class="text-xs text-gray-600 mt-0.5">Perfect plan for growing your social media presence</p>
+                            </div>
+                            <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                                <i class="fas fa-times text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- MODAL CONTENT --}}
+                    <div class="p-5">
+                        {{-- PLAN PRICE --}}
+                        <div class="text-center mb-5">
+                            <div class="flex items-baseline justify-center gap-1 mb-2">
+                                <span class="text-3xl font-bold text-gray-900">₹999</span>
+                                <span class="text-gray-500 text-sm">/month</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Everything you need to grow your social media presence</p>
+                        </div>
+
+                        {{-- FEATURES WITH ICONS --}}
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">Unlimited Projects & Links</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">10 Social Accounts</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">Advanced Analytics</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">Priority Support</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">Team Collaboration</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
+                                <span class="text-sm text-gray-700">Custom URL Shortener</span>
+                            </div>
+                        </div>
+
+                        {{-- SIMPLE PAYMENT SUMMARY --}}
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <span class="text-sm text-gray-600">Monthly subscription</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-2 mb-1">
+                                    <span class="text-2xl font-bold text-gray-900">₹999</span>
+                                    <span class="text-gray-500">/month</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Billed monthly, cancel anytime</p>
+                            </div>
+                        </div>
+
+                        {{-- PAYMENT BUTTON --}}
+                        <button onclick="processPayment()"
+                                id="paymentButton"
+                                class="w-full py-3.5 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
+                                       text-white font-bold rounded-lg hover:shadow-lg hover:shadow-indigo-200 
+                                       transition-all text-sm mb-3">
+                            <i class="fas fa-lock mr-2 text-xs"></i>Subscribe at ₹999/month
+                        </button>
+
+                        {{-- SECURITY NOTE --}}
+                        <p class="text-center text-xs text-gray-500">
+                            <i class="fas fa-shield-alt mr-1 text-xs"></i> Secure SSL encrypted payment
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Add event listener for close button
+        setTimeout(() => {
+            const closeBtn = document.getElementById('closeModalBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hidePlanModal);
+                console.log('Close button event listener added');
+            }
+            
+            // Add event listener for outside click
+            const modal = document.getElementById('planModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        hidePlanModal();
+                    }
+                });
+            }
+        }, 100);
+    }
+    
+    // Show modal
+    const modal = document.getElementById('planModal');
+    console.log('Modal element:', modal);
+    
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        console.log('Modal should be visible now');
+        
+        // Focus trap and ESC key listener
+        modal.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hidePlanModal();
+            }
+        });
+        
+        // Focus on modal for accessibility
+        modal.setAttribute('tabindex', '-1');
+        modal.focus();
+    } else {
+        console.error('Modal not found!');
+    }
+}
+
+function hidePlanModal() {
+    console.log('hidePlanModal called');
+    const modal = document.getElementById('planModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        console.log('Modal hidden');
+    }
+}
+
+// Global event listener for ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('planModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            hidePlanModal();
+        }
+    }
+});
+
+// Payment Processing - GST हटाने के बाद amount बदला गया
+async function processPayment() {
+    const button = document.getElementById('paymentButton');
+    if (!button) return;
+    
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    button.disabled = true;
+
+    try {
+        // Create order on backend - GST हटाने के बाद amount 99900 से 99900 ही रहेगा
+        const response = await fetch('/subscription/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                plan_id: 'pro',
+                amount: 99900, // ₹999 in paise (GST INCLUDED NOT REQUIRED)
+                billing_period: 'monthly'
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+        // Open Razorpay Checkout
+        const options = {
+            key: '{{ config("services.razorpay.key_id") }}',
+            amount: data.amount,
+            currency: 'INR',
+            name: '{{ config("app.name") }}',
+            description: 'Pro Plan - Monthly Subscription',
+            order_id: data.order_id,
+            handler: async function(response) {
+                await verifyPayment(response);
+            },
+            prefill: {
+                name: '{{ auth()->user()->name ?? "" }}',
+                email: '{{ auth()->user()->email ?? "" }}',
+                contact: '{{ auth()->user()->phone ?? "" }}'
+            },
+            theme: {
+                color: '#4C6FFF'
+            },
+            modal: {
+                ondismiss: function() {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            }
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+
+        hidePlanModal();
+
+    } catch (error) {
+        alert('Error: ' + error.message);
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+}
+
+// Payment Verification
+async function verifyPayment(response) {
+    try {
+        const verifyResponse = await fetch('/subscription/verify-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            })
+        });
+
+        const data = await verifyResponse.json();
+
+        if (data.success) {
+            // Show success message
+            showSuccessMessage();
+        } else {
+            alert('Payment verification failed. Please contact support.');
+        }
+
+    } catch (error) {
+        alert('Error verifying payment: ' + error.message);
+    }
+}
+
+// Success Message
+function showSuccessMessage() {
+    const successHTML = `
+        <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-[10000] p-4">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center animate-fadeIn">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
+                <p class="text-gray-600 mb-6">Your Pro plan has been activated successfully.</p>
+                <button onclick="window.location.reload()"
+                        class="w-full py-3 bg-[#4C6FFF] text-white font-semibold rounded-xl hover:bg-[#3A5BD9]">
+                    Continue
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', successHTML);
+}
+
+// Add CSS animations
+if (!document.getElementById('modal-styles')) {
+    const style = document.createElement('style');
+    style.id = 'modal-styles';
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+        
+        /* Modal responsive sizing */
+        @media (max-width: 640px) {
+            #planModal > div {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 </script>

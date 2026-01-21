@@ -767,155 +767,198 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-20 md:py-28 bg-white">
-        <div class="container-custom">
-            <div class="text-center mb-16 md:mb-20">
-                <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4 tracking-tight animate-on-scroll">Simple, Transparent Pricing</h2>
-                <p class="text-lg text-slate-600 max-w-2xl mx-auto text-balance animate-on-scroll" style="animation-delay: 0.1s">Choose the perfect plan for your needs</p>
-                
-                <!-- Pricing Toggle -->
-                <div class="flex items-center justify-center gap-4 mb-12 animate-on-scroll" style="animation-delay: 0.2s">
-                    <span class="text-sm font-semibold text-slate-900">Monthly</span>
-                    <button class="w-14 h-7 bg-indigo-100 rounded-full relative transition-colors duration-300" id="pricing-toggle">
-                        <div class="absolute top-1 w-5 h-5 bg-indigo-600 rounded-full transition-all duration-300 left-1" id="toggle-circle"></div>
-                    </button>
-                    <span class="text-sm font-semibold text-slate-500">
-                        Yearly 
-                        <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full ml-2">Save 20%</span>
-                    </span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Starter Plan -->
-                <div class="relative animate-on-scroll">
-                    <div class="p-8 rounded-3xl border border-slate-200 transition-all hover:scale-105 duration-300 h-full bg-white">
-                        <h3 class="text-xl font-bold mb-2">Starter</h3>
-                        <div class="flex items-baseline justify-center gap-1 mb-4">
-                            <span class="text-4xl font-black" id="starter-price">₹1,499</span>
-                            <span class="text-slate-500">/month</span>
-                        </div>
-                        <p class="text-sm text-slate-600 mb-8 text-center">Ideal for solo creators starting their design journey.</p>
-                        <ul class="text-left space-y-4 mb-8">
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Up to 5 Projects
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                2 Social Accounts
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Basic Analytics
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Standard URL Shortener
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Email Support
-                            </li>
-                        </ul>
-                        <button class="w-full py-3.5 bg-slate-50 text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-all hover:shadow-md">
-                            Choose Starter
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Pro Plan -->
-                <div class="relative animate-on-scroll" style="animation-delay: 0.2s">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">MOST POPULAR</div>
-                    <div class="p-8 rounded-3xl border-2 border-indigo-500 shadow-2xl shadow-indigo-100 scale-105 z-10 transition-all hover:scale-110 duration-300 h-full bg-white">
-                        <h3 class="text-xl font-bold mb-2">Pro</h3>
-                        <div class="flex items-baseline justify-center gap-1 mb-4">
-                            <span class="text-4xl font-black" id="pro-price">₹3,999</span>
-                            <span class="text-slate-500">/month</span>
-                        </div>
-                        <p class="text-sm text-slate-600 mb-8 text-center">Perfect for growing marketing teams and agencies.</p>
-                        <ul class="text-left space-y-4 mb-8">
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Unlimited Projects
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                10 Social Accounts
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Advanced Analytics
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Custom URL Shortener
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Priority Support
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Team Collaboration
-                            </li>
-                        </ul>
-                        <button class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-200 transition-all">
-                            Choose Pro
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Business Plan -->
-                <div class="relative animate-on-scroll" style="animation-delay: 0.4s">
-                    <div class="p-8 rounded-3xl border border-slate-200 transition-all hover:scale-105 duration-300 h-full bg-white">
-                        <h3 class="text-xl font-bold mb-2">Business</h3>
-                        <div class="flex items-baseline justify-center gap-1 mb-4">
-                            <span class="text-4xl font-black" id="business-price">₹7,999</span>
-                            <span class="text-slate-500">/month</span>
-                        </div>
-                        <p class="text-sm text-slate-600 mb-8 text-center">For large enterprises needing full-scale operations.</p>
-                        <ul class="text-left space-y-4 mb-8">
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Enterprise Projects
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Unlimited Accounts
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Real-time Dashboards
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                White-label Reports
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                Dedicated Manager
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-700">
-                                <i class="fas fa-check-circle text-indigo-500 text-base"></i>
-                                API Access
-                            </li>
-                        </ul>
-                        <button class="w-full py-3.5 bg-slate-50 text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-all hover:shadow-md">
-                            Choose Business
-                        </button>
-                    </div>
-                </div>
-            </div>
+<!-- Pricing Section -->
+<section id="pricing" class="py-20 md:py-28 bg-white">
+    <div class="container-custom">
+        <div class="text-center mb-16 md:mb-20">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4 tracking-tight animate-on-scroll">Simple, Transparent Pricing</h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto text-balance animate-on-scroll" style="animation-delay: 0.1s">Perfect plan for growing your social media presence</p>
             
-            <!-- Yearly prices note -->
-            <div class="mt-12 text-center text-sm text-slate-600 animate-on-scroll" style="animation-delay: 0.6s">
-                <p>Yearly pricing: Starter ₹1,199/month, Pro ₹3,199/month, Business ₹6,399/month (Save 20%)</p>
-                <p class="text-xs text-slate-500 mt-2">All prices are in Indian Rupees (₹) excluding GST</p>
+            <!-- Pricing Toggle -->
+            <div class="flex items-center justify-center gap-4 mb-12 animate-on-scroll" style="animation-delay: 0.2s">
+                <span class="text-sm font-semibold text-slate-900">Monthly</span>
+                <button class="w-14 h-7 bg-indigo-100 rounded-full relative transition-colors duration-300" id="pricing-toggle">
+                    <div class="absolute top-1 w-5 h-5 bg-indigo-600 rounded-full transition-all duration-300 left-1" id="toggle-circle"></div>
+                </button>
+                <span class="text-sm font-semibold text-slate-500">
+                    Yearly 
+                    <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full ml-2">Save 20%</span>
+                </span>
             </div>
         </div>
-    </section>
+
+        <div class="flex justify-center">
+            <!-- Single Pro Plan -->
+            <div class="relative animate-on-scroll max-w-md w-full">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">RECOMMENDED</div>
+                <div class="p-8 rounded-3xl border-2 border-indigo-500 shadow-2xl shadow-indigo-100 transition-all hover:scale-105 duration-300 h-full bg-white">
+                    <h3 class="text-xl font-bold mb-2">Pro Plan</h3>
+                    
+                    <!-- Monthly Price -->
+                    <div class="monthly-price">
+                        <div class="flex items-baseline justify-center gap-1 mb-4">
+                            <span class="text-4xl font-black">₹999</span>
+                            <span class="text-slate-500">/month</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-8 text-center">Everything you need to grow your social media presence</p>
+                    </div>
+                    
+                    <!-- Yearly Price (Hidden by default) -->
+                    <div class="yearly-price hidden">
+                        <div class="flex flex-col items-center mb-4">
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-black">₹9,590</span>
+                                <span class="text-slate-500">/year</span>
+                            </div>
+                            <div class="text-sm text-slate-500 mt-1">
+                                <span class="line-through text-slate-400 mr-2">₹11,988</span>
+                                <span class="text-green-600 font-semibold">Save ₹2,398</span>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-8 text-center mt-2">Only ₹799/month (billed annually)</p>
+                        </div>
+                    </div>
+                    
+                    <ul class="text-left space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            Unlimited Projects & Links
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            10 Social Accounts
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            Advanced Analytics
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            Priority Support
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            Team Collaboration
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-700">
+                            <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                            Custom URL Shortener
+                        </li>
+                    </ul>
+                    
+                    <!-- Monthly Payment Summary -->
+                    <div class="monthly-payment bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Plan Amount:</span>
+                            <span class="text-sm font-semibold">₹999</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-2 mt-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-900">Monthly Total:</span>
+                                <span class="text-lg font-bold text-indigo-600">₹999</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Yearly Payment Summary (Hidden by default) -->
+                    <div class="yearly-payment bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100 hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Yearly Plan:</span>
+                            <span class="text-sm font-semibold">₹9,590</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Original Price:</span>
+                            <span class="text-sm font-semibold line-through text-slate-400">₹11,988</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">You Save:</span>
+                            <span class="text-sm font-semibold text-green-600">₹2,398</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-2 mt-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-900">Yearly Total:</span>
+                                <span class="text-lg font-bold text-indigo-600">₹9,590</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1 text-right">(₹799/month)</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-200 transition-all">
+                        Get Started Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yearly prices note -->
+        <div class="mt-12 text-center text-sm text-slate-600 animate-on-scroll" style="animation-delay: 0.6s">
+            <p id="yearly-note"><span class="font-semibold">Save ₹2,398</span> with yearly billing</p>
+            <p class="text-xs text-slate-500 mt-2">All prices are in Indian Rupees (₹)</p>
+        </div>
+    </div>
+</section>
+<script>
+// Pricing Toggle Script
+document.addEventListener('DOMContentLoaded', function() {
+    const pricingToggle = document.getElementById('pricing-toggle');
+    const toggleCircle = document.getElementById('toggle-circle');
+    const monthlyPriceDiv = document.querySelector('.monthly-price');
+    const yearlyPriceDiv = document.querySelector('.yearly-price');
+    const monthlyPaymentDiv = document.querySelector('.monthly-payment');
+    const yearlyPaymentDiv = document.querySelector('.yearly-payment');
+    const monthlyText = document.querySelectorAll('#pricing .text-sm.font-semibold')[0];
+    const yearlyText = document.querySelectorAll('#pricing .text-sm.font-semibold')[1];
+    const yearlyNote = document.getElementById('yearly-note');
+    
+    let isYearly = false;
+    
+    pricingToggle.addEventListener('click', function() {
+        isYearly = !isYearly;
+        
+        if (isYearly) {
+            // Move toggle to yearly (right side)
+            toggleCircle.style.left = 'calc(100% - 1.25rem)';
+            pricingToggle.classList.remove('bg-indigo-100');
+            pricingToggle.classList.add('bg-indigo-200');
+            
+            // Show yearly prices, hide monthly
+            monthlyPriceDiv.classList.add('hidden');
+            yearlyPriceDiv.classList.remove('hidden');
+            monthlyPaymentDiv.classList.add('hidden');
+            yearlyPaymentDiv.classList.remove('hidden');
+            
+            // Update text colors
+            monthlyText.classList.remove('text-slate-900');
+            monthlyText.classList.add('text-slate-500');
+            yearlyText.classList.remove('text-slate-500');
+            yearlyText.classList.add('text-slate-900');
+            
+            // Update yearly note
+            yearlyNote.innerHTML = '<span class="font-semibold">Save ₹2,398</span> with yearly billing';
+            
+        } else {
+            // Move toggle to monthly (left side)
+            toggleCircle.style.left = '0.25rem';
+            pricingToggle.classList.remove('bg-indigo-200');
+            pricingToggle.classList.add('bg-indigo-100');
+            
+            // Show monthly prices, hide yearly
+            monthlyPriceDiv.classList.remove('hidden');
+            yearlyPriceDiv.classList.add('hidden');
+            monthlyPaymentDiv.classList.remove('hidden');
+            yearlyPaymentDiv.classList.add('hidden');
+            
+            // Update text colors
+            monthlyText.classList.remove('text-slate-500');
+            monthlyText.classList.add('text-slate-900');
+            yearlyText.classList.remove('text-slate-900');
+            yearlyText.classList.add('text-slate-500');
+            
+            // Update yearly note
+            yearlyNote.innerHTML = '<span class="font-semibold">Save ₹2,398</span> with yearly billing';
+        }
+    });
+});
+</script>
 
     <!-- FAQ Section -->
     <section class="py-20 md:py-28 bg-gradient-to-b from-slate-50 to-white">
