@@ -22,7 +22,8 @@ use App\Http\Controllers\{
     MongoPasswordResetController,
     ProfileController,
     NotificationController,
-    BroadcastGroupController
+    BroadcastGroupController,
+    SubscriptionController
 };
 
 use App\Models\QrLink;
@@ -32,6 +33,27 @@ use App\Models\QrLink;
 | QR IMAGE (SVG SERVE) – IMPORTANT
 |--------------------------------------------------------------------------
 */
+
+
+Route::middleware('auth')->group(function () {
+
+    Route::post('/subscription/create',
+        [SubscriptionController::class, 'create']);
+
+    Route::post('/subscription/verify',
+        [SubscriptionController::class, 'verify']);
+
+    Route::post('/subscription/cancel',
+        [SubscriptionController::class, 'cancel']);
+});
+
+/**
+ * Example protected route
+ */
+Route::middleware(['auth', 'subscribed'])->get('/dashboard', function () {
+    return 'Welcome to premium dashboard';
+});
+
 Route::get('/qr-image/{code}', function ($code) {
 
     $qr = QrLink::where('short_code', $code)->firstOrFail();

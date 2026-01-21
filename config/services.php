@@ -44,5 +44,10 @@ return [
     'client_id'     => env('YOUTUBE_CLIENT_ID'),
     'client_secret' => env('YOUTUBE_CLIENT_SECRET'),
 ],
+'razorpay' => [
+    'key' => env('RAZORPAY_KEY'),
+    'secret' => env('RAZORPAY_SECRET'),
+],
+
 
 ];
