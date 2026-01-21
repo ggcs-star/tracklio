@@ -3,6 +3,10 @@
 /public/build
 /public/hot
 /public/storage
+!/public/storage/avatars
+!/public/storage/bio
+!/public/storage/qr-codes
+!/public/storage/qrcodes
 /storage/*.key
 /vendor
 .env
@@ -19,7 +23,7 @@ yarn-error.log
 /.vscode
 
 # Laravel specific
-/storage/app/*
+# /storage/app/*
 !/storage/app/.gitignore
 !/storage/app/public
 /storage/framework/cache/*
