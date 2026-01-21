@@ -34,5 +34,15 @@ return [
     'client_id'     => env('YOUTUBE_CLIENT_ID'),
     'client_secret' => env('YOUTUBE_CLIENT_SECRET'),
 ],
+'facebook' => [
+    'client_id'     => env('FACEBOOK_CLIENT_ID'),
+    'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+    'redirect'      => env('FACEBOOK_REDIRECT_URI'),
+],
+
+'youtube' => [
+    'client_id'     => env('YOUTUBE_CLIENT_ID'),
+    'client_secret' => env('YOUTUBE_CLIENT_SECRET'),
+],
 
 ];

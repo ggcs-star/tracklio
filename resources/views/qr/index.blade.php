@@ -976,6 +976,21 @@ END:VEVENT`;
         return `${this.domain}/qr/${this.trackingCode}`;
     }
 },
+getGradientRotation() {
+    switch (this.gradientDirection) {
+        case 'horizontal':
+            return 0;
+        case 'vertical':
+            return Math.PI / 2;
+        case 'diagonal':
+            return Math.PI / 4;
+        case 'radial':
+            return 0;
+        default:
+            return 0;
+    }
+},
+
         // ✅ GENERATE QR FUNCTION - FIXED
         async generateQR() {
             // ✅ FIX: Generate tracking code agar dynamic hai aur nahi hai
@@ -984,7 +999,14 @@ END:VEVENT`;
                 console.log('✅ Generated Tracking Code for QR:', this.trackingCode);
             }
 
-            const data = this.getQRData();
+let data;
+
+// ✅ EDIT MODE + STATIC → direct DB wala QR data
+if (window.EDIT_QR && this.mode === 'static') {
+    data = window.EDIT_QR.qr_data;
+} else {
+    data = this.getQRData();
+}
             const qrContainer = document.getElementById('qrPreview');
             
             this.qr = null;
@@ -994,10 +1016,22 @@ END:VEVENT`;
                 width: 260,
                 height: 260,
                 data: data,
-                dotsOptions: {
-                    color: this.colorType === 'gradient' ? this.gradientStart : this.fg,
-                    type: this.dotStyle
-                },
+                dotsOptions: this.colorType === 'gradient'
+  ? {
+      type: this.dotStyle,
+      gradient: {
+        type: this.gradientDirection === 'radial' ? 'radial' : 'linear',
+        rotation: this.getGradientRotation(),
+        colorStops: [
+          { offset: 0, color: this.gradientStart },
+          { offset: 1, color: this.gradientStop }
+        ]
+      }
+    }
+  : {
+      type: this.dotStyle,
+      color: this.fg
+    },
                 backgroundOptions: {
                     color: this.bg
                 },
@@ -1095,25 +1129,28 @@ END:VEVENT`;
 
             // Design data
             const designData = {
-                color_type: this.colorType,
-                foreground: this.fg,
-                background: this.bg,
-                gradient_start: this.gradientStart,
-                gradient_stop: this.gradientStop,
-                gradient_direction: this.gradientDirection,
-                eye_frame_color: this.eyeFrameColor,
-                eye_color: this.eyeColor,
-                dot_style: this.dotStyle,
-                eye_style: this.eyeStyle,
-                frame_text: this.frameText,
-                frame_color: this.frameColor,
-                text_color: this.textColor,
-                text_font: this.textFont,
-                margin: this.margin,
-                error_correction: this.errorCorrection,
-                logo_size: this.logoSize,
-                has_logo: !!this.logo
-            };
+    color_type: this.colorType,
+    foreground: this.fg,
+    background: this.bg,
+    gradient_start: this.gradientStart,
+    gradient_stop: this.gradientStop,
+    gradient_direction: this.gradientDirection,
+    eye_frame_color: this.eyeFrameColor,
+    eye_color: this.eyeColor,
+    dot_style: this.dotStyle,
+    eye_style: this.eyeStyle,
+    frame_text: this.frameText,
+    frame_color: this.frameColor,
+    text_color: this.textColor,
+    text_font: this.textFont,
+    margin: this.margin,
+    error_correction: this.errorCorrection,
+    logo_size: this.logoSize,
+
+    has_logo: !!this.logo,
+    logo: this.logo
+};
+
 
         // Payload data
 let payloadObject;
@@ -1164,18 +1201,49 @@ if (this.payloadType === 'sms' && this.mode === 'static') {
             };
 
             // QR images generate karo
-            const saveQR = new QRCodeStyling({
-                width: 260,
-                height: 260,
-                data: finalQRData, // ✅ Same data jo QR mein hai
-                dotsOptions: {
-                    color: this.colorType === 'gradient' ? this.gradientStart : this.fg,
-                    type: this.dotStyle
-                },
-                backgroundOptions: { color: this.bg },
-                qrOptions: { errorCorrectionLevel: this.errorCorrection },
-                margin: Number(this.margin)
-            });
+            // QR images generate karo (WITH LOGO)
+const saveQRConfig = {
+    width: 260,
+    height: 260,
+    data: finalQRData,
+   dotsOptions: this.colorType === 'gradient'
+  ? {
+      type: this.dotStyle,
+      gradient: {
+        type: this.gradientDirection === 'radial' ? 'radial' : 'linear',
+        rotation: this.getGradientRotation(),
+        colorStops: [
+          { offset: 0, color: this.gradientStart },
+          { offset: 1, color: this.gradientStop }
+        ]
+      }
+    }
+  : {
+      type: this.dotStyle,
+      color: this.fg
+    },
+
+    backgroundOptions: {
+        color: this.bg
+    },
+    qrOptions: {
+        errorCorrectionLevel: this.errorCorrection
+    },
+    margin: Number(this.margin)
+};
+
+// ✅ LOGO ADD KARNA ZAROORI HAI
+if (this.logo) {
+    saveQRConfig.image = this.logo;
+    saveQRConfig.imageOptions = {
+        crossOrigin: 'anonymous',
+        margin: 5,
+        imageSize: this.logoSize / 100
+    };
+}
+
+const saveQR = new QRCodeStyling(saveQRConfig);
+
 
             const qrPngBlob = await saveQR.getRawData('png');
             const qrSvgBlob = await saveQR.getRawData('svg');
@@ -1349,6 +1417,10 @@ if (this.payloadType === 'sms' && this.mode === 'static') {
                 this.margin = s.margin ?? 10;
                 this.errorCorrection = s.error_correction ?? 'M';
                 this.logoSize = s.logo_size ?? 60;
+
+                if (s.logo) {
+    this.logo = s.logo;
+}
 
                 // Auto generate QR for edit mode
                 setTimeout(() => {

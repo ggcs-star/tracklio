@@ -194,9 +194,14 @@ onclick="copyToClipboard('{{ url('/q/'.$qr->short_code) }}')"
                     class="border-2 border-gray-200 rounded-2xl p-6 bg-gradient-to-br from-white to-gray-50 shadow-inner transition-all duration-500"
                     :style="`background:${bgColor}; transform: rotate(${qrRotate}deg);`">
                     
-                    <div id="qrPreview"
-                         class="w-64 h-64 flex items-center justify-center">
-                    </div>
+                    <div class="flex justify-center items-center mt-4">
+    <div
+        id="qrPreview"
+        class="w-[260px] h-[260px] bg-white border rounded-xl shadow flex items-center justify-center">
+        {{-- QR code will be rendered here --}}
+    </div>
+</div>
+
                 </div>
                 
                 {{-- Scan Guide --}}
@@ -214,13 +219,15 @@ onclick="copyToClipboard('{{ url('/q/'.$qr->short_code) }}')"
 
             {{-- Action Buttons --}}
             <div class="flex flex-wrap gap-3 justify-center">
+                
                 <button
-                    type="button"
-                    @click="downloadQR()"
-                    class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-medium">
-                    <i data-lucide="download" class="w-4 h-4"></i>
-                    Download QR
-                </button>
+    type="button"
+    onclick="downloadQR('{{ $qr->short_code }}')"
+    class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-medium">
+    <i data-lucide="download" class="w-4 h-4"></i>
+    Download QR
+</button>
+
 
                <a href="{{ url('/q/'.$qr->short_code) }}" target="_blank"
 
@@ -229,12 +236,12 @@ onclick="copyToClipboard('{{ url('/q/'.$qr->short_code) }}')"
                     Test Link
                 </a>
 
-                <button
-                    onclick="shareQR()"
-                    class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-medium">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    Share
-                </button>
+               <button
+    onclick="shareQRCode('{{ url('/q/'.$qr->short_code) }}', '{{ $qr->label ?: 'QR Code' }}')"
+    class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-medium">
+    <i data-lucide="share-2" class="w-4 h-4"></i>
+    Share
+</button>
             </div>
 
             {{-- Download Options --}}
@@ -464,9 +471,299 @@ onclick="copyToClipboard('{{ url('/q/'.$qr->short_code) }}')"
 
 </div>
 
-{{-- ================= QR SCRIPT (UNCHANGED) ================= --}}
+{{-- ================= SCRIPTS ================= --}}
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 <script>
+// Wait for QRCodeStyling library to load
+let qrInstance = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Lucide icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+    
+    // Load QR code styling library
+    initializeQR();
+});
+
+function initializeQR() {
+    // Check if library is loaded
+    if (typeof QRCodeStyling === 'undefined') {
+        console.error('QRCodeStyling library not loaded');
+        setTimeout(initializeQR, 100);
+        return;
+    }
+    
+    // Create QR code instance
+    const qrUrl = "{{ url('/q/'.$qr->short_code) }}?qr=1";
+    
+    qrInstance = new QRCodeStyling({
+        width: 260,
+        height: 260,
+        data: qrUrl,
+        dotsOptions: {
+            color: "#000000",
+            type: "square"
+        },
+        backgroundOptions: {
+            color: "#ffffff"
+        },
+        imageOptions: {
+            crossOrigin: "anonymous",
+            margin: 10
+        }
+    });
+    
+    // Append QR code to container
+    const qrContainer = document.getElementById('qrPreview');
+    if (qrContainer) {
+        qrContainer.innerHTML = '';
+        qrInstance.append(qrContainer);
+    }
+}
+
+// Download QR Code function (same as index page)
+function downloadQR(shortCode) {
+    if (!qrInstance) {
+        alert('QR code is not ready. Please wait a moment.');
+        return;
+    }
+    
+    // Show loading state
+    showToast('Preparing QR code for download...', 'info');
+    
+    // Generate filename
+    const fileName = `QR-Code-${shortCode}-${Date.now()}`;
+    
+    // Download as PNG
+    qrInstance.getRawData('png').then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('QR Code downloaded successfully!', 'success');
+    }).catch(error => {
+        console.error('Download error:', error);
+        showToast('Failed to download QR code. Please try again.', 'error');
+    });
+}
+
+// Share QR Code function - FIXED FOR ALL ENVIRONMENTS
+function shareQRCode(url, title) {
+    const shareData = {
+        title: title || 'QR Code',
+        text: 'Scan this QR code to visit: ' + url,
+        url: url
+    };
+    
+    // Check if Web Share API is available AND we're on HTTPS
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData) && window.location.protocol === 'https:') {
+        // HTTPS environment - use Web Share API
+        navigator.share(shareData)
+            .then(() => {
+                showToast('QR code shared successfully!', 'success');
+            })
+            .catch(error => {
+                console.error('Share failed:', error);
+                // Fallback to custom share modal
+                showCustomShareModal(url, title);
+            });
+    } else {
+        // HTTP/localhost environment OR Web Share not supported
+        showCustomShareModal(url, title);
+    }
+}
+
+// Custom Share Modal for HTTP/localhost
+function showCustomShareModal(url, title) {
+    // Remove existing modal if any
+    const existingModal = document.getElementById('customShareModal');
+    if (existingModal) existingModal.remove();
+    
+    const modal = document.createElement('div');
+    modal.id = 'customShareModal';
+    modal.className = 'fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all animate-scale-in">
+            <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="share-2" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Share QR Code</h3>
+                            <p class="text-sm text-gray-600">Copy link or share via apps</p>
+                        </div>
+                    </div>
+                    <button onclick="closeCustomShareModal()" 
+                            class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-gray-700 mb-2">QR Code Link</p>
+                    <div class="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl border border-gray-200">
+                        <div class="flex-1 truncate text-gray-800 font-medium text-sm">${url}</div>
+                        <button onclick="copyToClipboard('${url}'); closeCustomShareModal();" 
+                                class="text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 p-2 rounded-lg transition-colors flex-shrink-0"
+                                title="Copy">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Copy this link to share the QR code</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="shareViaWhatsApp('${url}', '${title}'); closeCustomShareModal();"
+                            class="flex items-center justify-center gap-2 px-4 py-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                        </svg>
+                        <span class="font-medium">WhatsApp</span>
+                    </button>
+                    
+                    <button onclick="shareViaEmail('${url}', '${title}'); closeCustomShareModal();"
+                            class="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 transition-colors">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                        <span class="font-medium">Email</span>
+                    </button>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <p class="text-sm text-gray-600 mb-3">Quick actions:</p>
+                    <div class="flex gap-2">
+                        <button onclick="downloadQR('{{ $qr->short_code }}'); closeCustomShareModal();"
+                                class="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 rounded-xl border border-indigo-200 transition-colors font-medium">
+                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                            Download QR
+                        </button>
+                        <a href="${url}" target="_blank"
+                           class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 text-emerald-700 rounded-xl border border-emerald-200 transition-colors font-medium text-center">
+                            <i data-lucide="external-link" class="w-4 h-4 inline mr-2"></i>
+                            Open Link
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Initialize icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+    
+    // Add animation style if not exists
+    if (!document.getElementById('modal-styles')) {
+        const style = document.createElement('style');
+        style.id = 'modal-styles';
+        style.textContent = `
+            @keyframes scale-in {
+                from { transform: scale(0.95); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            .animate-scale-in { animation: scale-in 0.2s ease-out; }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function closeCustomShareModal() {
+    const modal = document.getElementById('customShareModal');
+    if (modal) {
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.remove(), 200);
+    }
+}
+
+// Platform-specific sharing functions
+function shareViaWhatsApp(url, title) {
+    const text = encodeURIComponent(`${title}: ${url}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    showToast('Opening WhatsApp...', 'info');
+}
+
+function shareViaEmail(url, title) {
+    const subject = encodeURIComponent(title);
+    const body = encodeURIComponent(`Scan this QR code or visit: ${url}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    showToast('Opening email...', 'info');
+}
+
+// PERFECT TOAST FUNCTION - VISIBLE MESSAGES
+function showToast(message, type = 'info') {
+    const colors = {
+        success: 'bg-gradient-to-r from-emerald-500 to-green-600',
+        error: 'bg-gradient-to-r from-rose-500 to-red-600',
+        info: 'bg-gradient-to-r from-blue-500 to-cyan-600'
+    };
+    
+    const icons = {
+        success: 'check-circle',
+        error: 'alert-circle',
+        info: 'info'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 sm:top-6 right-4 sm:right-6 z-[99999] px-4 py-3 sm:px-5 sm:py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-x-full ${colors[type]}`;
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/30 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
+                <i data-lucide="${icons[type]}" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
+            </div>
+            <div class="min-w-0">
+                <p class="font-semibold text-sm sm:text-base truncate text-white">${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+                <p class="text-xs sm:text-sm mt-0.5 line-clamp-2 text-white/95">${message}</p>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => toast.classList.remove('translate-x-full'), 10);
+    
+    // Initialize icon
+    if (window.lucide) {
+        const icon = toast.querySelector('i');
+        lucide.createIcons({ icons: [icon] });
+    }
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Copy to clipboard function with perfect toast
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Link copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy. Please try again.', 'error');
+    });
+}
+
+// Alpine.js QR Designer Component
 function qrDesigner() {
     return {
         fgType: "{{ $qr->foreground_type ?? 'single' }}",
@@ -476,30 +773,31 @@ function qrDesigner() {
         gradEnd: "{{ $qr->gradient_end ?? '#ff0000' }}",
         gradDir: "{{ $qr->gradient_dir ?? 'horizontal' }}",
         qrRotate: {{ $qr->qr_rotation ?? 0 }},
-        qr: null,
-
+        
         init() {
-            this.renderQR();
+            // Initialize after a short delay
+            setTimeout(() => {
+                this.renderQR();
+            }, 500);
         },
-
+        
         renderQR() {
-            document.getElementById('qrPreview').innerHTML = '';
-
+            if (!qrInstance || typeof QRCodeStyling === 'undefined') {
+                console.warn('QR instance not ready');
+                return;
+            }
+            
             const gradient = this.fgType === 'gradient' ? {
                 type: this.gradDir === 'radial' ? 'radial' : 'linear',
-                rotation:
-                    this.gradDir === 'vertical' ? 90 :
-                    this.gradDir === 'diagonal' ? 45 : 0,
+                rotation: this.gradDir === 'vertical' ? 90 : this.gradDir === 'diagonal' ? 45 : 0,
                 colorStops: [
                     { offset: 0, color: this.gradStart },
                     { offset: 1, color: this.gradEnd }
                 ]
             } : null;
-
-            this.qr = new QRCodeStyling({
-                width: 260,
-                height: 260,
-                data: "{{ url('/q/'.$qr->short_code) }}?qr=1",
+            
+            // Update QR instance with new options
+            qrInstance.update({
                 dotsOptions: {
                     color: this.fgType === 'single' ? this.fgColor : undefined,
                     gradient: gradient
@@ -508,65 +806,9 @@ function qrDesigner() {
                     color: this.bgColor
                 }
             });
-
-            this.qr.append(document.getElementById('qrPreview'));
-        },
-
-        downloadQR() {
-            if (!this.qr) return;
-
-            this.qr.download({
-               name: "qr-{{ $qr->short_code }}",
-                extension: "png"
-            });
         }
-    }
+    };
 }
-
-// Helper functions
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        // Show notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-6 right-6 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-xl flex items-center gap-3 z-50 animate-fade-in';
-        notification.innerHTML = `
-            <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
-            </div>
-            <div>
-                <p class="font-semibold">Link copied!</p>
-                <p class="text-sm text-gray-300">Ready to share</p>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('opacity-0', 'translate-x-4');
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-    });
-}
-function shareQR() {
-    const url = "{{ url('/q/'.$qr->short_code) }}";
-
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'QR Code: {{ $qr->label ?: "QR Code" }}',
-            text: 'Scan this QR code',
-            url: url
-        });
-    } else {
-        copyToClipboard(url);
-    }
-}
-
-// Initialize Lucide icons
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.lucide) {
-        lucide.createIcons();
-    }
-});
 </script>
 
 <style>
@@ -650,6 +892,31 @@ input[type="color"]::-webkit-color-swatch {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #a5b4fc;
+}
+
+/* Toast visibility fix */
+.fixed.z-\[99999\] {
+    z-index: 99999 !important;
+}
+
+.bg-gradient-to-r.from-emerald-500.to-green-600 {
+    background-image: linear-gradient(to right, #10b981, #22c55e) !important;
+}
+
+.bg-gradient-to-r.from-rose-500.to-red-600 {
+    background-image: linear-gradient(to right, #f43f5e, #dc2626) !important;
+}
+
+.bg-gradient-to-r.from-blue-500.to-cyan-600 {
+    background-image: linear-gradient(to right, #3b82f6, #0891b2) !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.text-white\\/95 {
+    color: rgba(255, 255, 255, 0.95) !important;
 }
 
 /* Responsive adjustments */

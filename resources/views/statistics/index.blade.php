@@ -43,12 +43,14 @@
 
         <div class="flex items-center gap-3">
           <div class="relative group">
-            <select name="range" onchange="this.form.submit()"
-                    class="appearance-none bg-slate-800/60 backdrop-blur-sm border border-slate-700 text-white rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 w-full md:w-48 hover:bg-slate-800/80 hover:border-slate-600">
-              <option value="7"  {{ $days==7?'selected':'' }}>Last 7 Days</option>
-              <option value="30" {{ $days==30?'selected':'' }}>Last 30 Days</option>
-              <option value="90" {{ $days==90?'selected':'' }}>Last 90 Days</option>
-            </select>
+            <form method="GET" action="">
+              <select name="range" onchange="this.form.submit()"
+                      class="appearance-none bg-slate-800/60 backdrop-blur-sm border border-slate-700 text-white rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 w-full md:w-48 hover:bg-slate-800/80 hover:border-slate-600">
+                <option value="7"  {{ $days==7?'selected':'' }}>Last 7 Days</option>
+                <option value="30" {{ $days==30?'selected':'' }}>Last 30 Days</option>
+                <option value="90" {{ $days==90?'selected':'' }}>Last 90 Days</option>
+              </select>
+            </form>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
               <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -73,8 +75,8 @@
       <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-cyan-500"></div>
       <div class="flex items-start justify-between mb-4">
         <div>
-          <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Clicks</p>
-          <p class="text-3xl font-bold text-slate-900">{{ number_format($totalVisits) }}</p>
+          <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Links</p>
+          <p class="text-3xl font-bold text-slate-900">{{ number_format($totalLinksCount) }}</p>
         </div>
         <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
           <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +87,7 @@
       </div>
       <div class="pt-4 border-t border-blue-100/50">
         <div class="flex items-center justify-between text-sm">
-          <span class="text-slate-600">All time clicks</span>
+          <span class="text-slate-600">Total QR + Links created</span>
           <span class="text-blue-600 font-semibold bg-blue-100 px-2 py-1 rounded-lg">100%</span>
         </div>
         <div class="w-full bg-blue-100 rounded-full h-2 mt-3">
@@ -112,12 +114,12 @@
         <div class="flex items-center justify-between text-sm">
           <span class="text-slate-600">Scan rate</span>
           <span class="text-purple-600 font-semibold bg-purple-100 px-2 py-1 rounded-lg">
-            {{ $totalVisits > 0 ? round(($totalQrScans / $totalVisits) * 100, 1) : 0 }}%
+            {{ $totalLinksCount > 0 ? round(($totalQrScans / $totalLinksCount) * 100, 1) : 0 }}%
           </span>
         </div>
         <div class="w-full bg-purple-100 rounded-full h-2 mt-3">
           <div class="bg-gradient-to-r from-purple-600 to-fuchsia-500 h-2 rounded-full transition-all duration-1000" 
-               style="width: {{ $totalVisits > 0 ? ($totalQrScans / $totalVisits) * 100 : 0 }}%"></div>
+               style="width: {{ $totalInteractions > 0 ? ($totalQrScans / $totalInteractions) * 100 : 0 }}%"></div>
         </div>
       </div>
     </div>
@@ -128,7 +130,9 @@
       <div class="flex items-start justify-between mb-4">
         <div>
           <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Link Clicks</p>
-          <p class="text-3xl font-bold text-slate-900">{{ number_format($totalVisits - $totalQrScans) }}</p>
+          <p class="text-3xl font-bold text-slate-900">
+            {{ number_format($totalLinkClicks) }}
+          </p>
         </div>
         <div class="p-3 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
           <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,12 +144,21 @@
         <div class="flex items-center justify-between text-sm">
           <span class="text-slate-600">Direct clicks</span>
           <span class="text-emerald-600 font-semibold bg-emerald-100 px-2 py-1 rounded-lg">
-            {{ $totalVisits > 0 ? round((($totalVisits - $totalQrScans) / $totalVisits) * 100, 1) : 0 }}%
+            {{ $totalInteractions > 0 
+                ? round(($totalLinkClicks / $totalInteractions) * 100, 1) 
+                : 0 
+            }}%
           </span>
         </div>
         <div class="w-full bg-emerald-100 rounded-full h-2 mt-3">
-          <div class="bg-gradient-to-r from-emerald-600 to-green-500 h-2 rounded-full transition-all duration-1000"
-                 style="width: {{ $totalVisits > 0 ? (($totalVisits - $totalQrScans) / $totalVisits) * 100 : 0 }}%"></div>
+          <div
+            class="bg-gradient-to-r from-emerald-600 to-green-500 h-2 rounded-full transition-all duration-1000"
+            style="width: {{
+              $totalInteractions > 0
+                ? ($totalLinkClicks / $totalInteractions) * 100
+                : 0
+            }}%">
+          </div>
         </div>
       </div>
     </div>
@@ -258,7 +271,7 @@
                 <div class="text-right">
                   <p class="text-lg font-bold text-slate-900">{{ $count }}</p>
                   <p class="text-sm text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-lg">
-                    {{ $totalVisits > 0 ? round(($count / $totalVisits) * 100, 1) : 0 }}%
+                    {{ $totalInteractions > 0 ? round(($count / $totalInteractions) * 100, 1) : 0 }}%
                   </p>
                 </div>
               </div>
@@ -310,7 +323,7 @@
                 <div class="text-right">
                   <span class="text-sm font-bold text-slate-900">{{ $count }}</span>
                   <span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded ml-2">
-                    {{ $totalVisits > 0 ? round(($count / $totalVisits) * 100, 1) : 0 }}%
+                    {{ $totalInteractions > 0 ? round(($count / $totalInteractions) * 100, 1) : 0 }}%
                   </span>
                 </div>
               </div>
@@ -350,7 +363,7 @@
                 <div class="text-right">
                   <span class="text-sm font-bold text-slate-900">{{ $count }}</span>
                   <span class="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-0.5 rounded ml-2">
-                    {{ $totalVisits > 0 ? round(($count / $totalVisits) * 100, 1) : 0 }}%
+                    {{ $totalInteractions > 0 ? round(($count / $totalInteractions) * 100, 1) : 0 }}%
                   </span>
                 </div>
               </div>
@@ -364,279 +377,6 @@
   </div>
 
 </div>
-
-<script>
-// Enhanced Charts with Better Colors
-const createModernLineChart = () => {
-  const ctx = document.getElementById('clickChart').getContext('2d');
-  
-  return new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: {!! json_encode($clicksByDate->keys()) !!},
-      datasets: [{
-        label: 'Total Clicks',
-        data: {!! json_encode($clicksByDate->values()) !!},
-        borderColor: '#2563eb', // Brighter blue
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const {ctx, chartArea} = chart;
-          if (!chartArea) return null;
-          
-          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-          gradient.addColorStop(0, 'rgba(37, 99, 235, 0.15)');
-          gradient.addColorStop(0.5, 'rgba(37, 99, 235, 0.25)');
-          gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-          return gradient;
-        },
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#2563eb',
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 3,
-        pointRadius: 5,
-        pointHoverRadius: 8,
-        pointHoverBackgroundColor: '#1d4ed8',
-        pointHoverBorderColor: '#ffffff',
-        pointHoverBorderWidth: 4,
-        cubicInterpolationMode: 'monotone'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          titleColor: '#f8fafc',
-          bodyColor: '#f8fafc',
-          titleFont: {
-            size: 14,
-            family: "'Inter', sans-serif",
-            weight: '600'
-          },
-          bodyFont: {
-            size: 13,
-            family: "'Inter', sans-serif"
-          },
-          padding: 12,
-          cornerRadius: 8,
-          borderColor: 'rgba(255, 255, 255, 0.15)',
-          borderWidth: 1,
-          displayColors: false,
-          callbacks: {
-            label: function(context) {
-              return `📊 Clicks: ${context.parsed.y}`;
-            },
-            title: function(tooltipItems) {
-              return `Date: ${tooltipItems[0].label}`;
-            }
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: 'rgba(226, 232, 240, 0.6)',
-            drawBorder: false,
-            lineWidth: 1
-          },
-          ticks: {
-            font: {
-              size: 12,
-              family: "'Inter', sans-serif"
-            },
-            color: '#64748b',
-            padding: 10,
-            callback: function(value) {
-              return value.toLocaleString();
-            }
-          },
-          border: {
-            display: false
-          }
-        },
-        x: {
-          grid: {
-            color: 'rgba(226, 232, 240, 0.4)',
-            drawBorder: false,
-            lineWidth: 1
-          },
-          ticks: {
-            font: {
-              size: 11,
-              family: "'Inter', sans-serif"
-            },
-            color: '#64748b',
-            maxRotation: 45,
-            padding: 8
-          },
-          border: {
-            display: false
-          }
-        }
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index'
-      },
-      animations: {
-        tension: {
-          duration: 1000,
-          easing: 'easeOutQuart'
-        },
-        radius: {
-          duration: 400,
-          easing: 'linear'
-        }
-      }
-    }
-  });
-};
-
-// Enhanced Donut Charts with Vibrant Colors
-const createEnhancedDonutChart = (id, labels, data, colors) => {
-  const ctx = document.getElementById(id).getContext('2d');
-  
-  // Create gradient effects for each slice
-  const gradientColors = colors.map((color, index) => {
-    const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, Chart.helpers.color(color).lighten(0.3).rgbString());
-    return gradient;
-  });
-
-  const hoverColors = colors.map(color => {
-    return Chart.helpers.color(color).alpha(0.9).rgbString();
-  });
-
-  return new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: gradientColors,
-        borderWidth: 0,
-        hoverBackgroundColor: hoverColors,
-        hoverOffset: 20,
-        borderRadius: 10,
-        spacing: 6,
-        borderAlign: 'inner'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '75%',
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          titleColor: '#f8fafc',
-          bodyColor: '#f8fafc',
-          padding: 12,
-          cornerRadius: 8,
-          borderColor: 'rgba(255, 255, 255, 0.15)',
-          borderWidth: 1,
-          callbacks: {
-            label: function(context) {
-              const label = context.label || '';
-              const value = context.parsed;
-              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = Math.round((value / total) * 100);
-              return `${label}: ${value} (${percentage}%)`;
-            }
-          }
-        }
-      },
-      animation: {
-        animateScale: true,
-        animateRotate: true,
-        duration: 1000,
-        easing: 'easeOutQuart'
-      }
-    }
-  });
-};
-
-// Initialize Charts with Better Color Palettes
-const clickChart = createModernLineChart();
-
-// Enhanced Color Palettes
-const enhancedColorPalettes = {
-  countryChart: [
-    '#3b82f6', // Blue
-    '#10b981', // Emerald
-    '#8b5cf6', // Purple
-    '#f59e0b', // Amber
-    '#ef4444', // Red
-    '#06b6d4', // Cyan
-    '#f97316', // Orange
-    '#84cc16', // Lime
-    '#ec4899', // Pink
-    '#6366f1'  // Indigo
-  ],
-  deviceChart: [
-    '#10b981', // Emerald
-    '#3b82f6', // Blue
-    '#f59e0b', // Amber
-    '#8b5cf6', // Purple
-    '#ef4444', // Red
-    '#06b6d4'  // Cyan
-  ],
-  browserChart: [
-    '#8b5cf6', // Purple
-    '#3b82f6', // Blue
-    '#10b981', // Emerald
-    '#f59e0b', // Amber
-    '#ef4444', // Red
-    '#06b6d4'  // Cyan
-  ]
-};
-
-const countryChart = createEnhancedDonutChart(
-  'countryChart',
-  {!! json_encode($countries->keys()) !!},
-  {!! json_encode($countries->values()) !!},
-  enhancedColorPalettes.countryChart
-);
-
-const deviceChart = createEnhancedDonutChart(
-  'deviceChart',
-  {!! json_encode($devices->keys()) !!},
-  {!! json_encode($devices->values()) !!},
-  enhancedColorPalettes.deviceChart
-);
-
-const browserChart = createEnhancedDonutChart(
-  'browserChart',
-  {!! json_encode($browsers->keys()) !!},
-  {!! json_encode($browsers->values()) !!},
-  enhancedColorPalettes.browserChart
-);
-
-// Add animation on chart hover
-document.querySelectorAll('canvas').forEach(canvas => {
-  canvas.addEventListener('mouseenter', function() {
-    this.style.transform = 'scale(1.02)';
-    this.style.transition = 'transform 0.3s ease';
-  });
-  
-  canvas.addEventListener('mouseleave', function() {
-    this.style.transform = 'scale(1)';
-  });
-});
-</script>
-
-{{-- ... previous code remains same ... --}}
 
 <script>
 // Enhanced Charts with Better Colors
@@ -850,9 +590,6 @@ const createEnhancedDonutChart = (id, labels, data, colorPairs) => {
   });
 };
 
-// Initialize Charts with PAIR-WISE Color Palettes
-const clickChart = createModernLineChart();
-
 // PAIR-WISE Color Palettes (Light to Dark Gradients)
 const pairWiseColorPalettes = {
   countryChart: [
@@ -899,49 +636,53 @@ const getColorPairs = (chartType, dataLength) => {
   return repeatedPalette;
 };
 
-// Get data lengths
-const countryDataLength = {!! json_encode($countries->keys()) !!}.length;
-const deviceDataLength = {!! json_encode($devices->keys()) !!}.length;
-const browserDataLength = {!! json_encode($browsers->keys()) !!}.length;
-
-// Initialize charts with pair-wise colors
-const countryChart = createEnhancedDonutChart(
-  'countryChart',
-  {!! json_encode($countries->keys()) !!},
-  {!! json_encode($countries->values()) !!},
-  getColorPairs('countryChart', countryDataLength)
-);
-
-const deviceChart = createEnhancedDonutChart(
-  'deviceChart',
-  {!! json_encode($devices->keys()) !!},
-  {!! json_encode($devices->values()) !!},
-  getColorPairs('deviceChart', deviceDataLength)
-);
-
-const browserChart = createEnhancedDonutChart(
-  'browserChart',
-  {!! json_encode($browsers->keys()) !!},
-  {!! json_encode($browsers->values()) !!},
-  getColorPairs('browserChart', browserDataLength)
-);
-
-// Enhanced chart hover effects with glow
-document.querySelectorAll('canvas').forEach(canvas => {
-  canvas.addEventListener('mouseenter', function() {
-    this.style.transform = 'scale(1.03) rotate(1deg)';
-    this.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    this.style.filter = 'drop-shadow(0 12px 24px rgba(0, 0, 0, 0.15)) brightness(1.05)';
-  });
-  
-  canvas.addEventListener('mouseleave', function() {
-    this.style.transform = 'scale(1) rotate(0deg)';
-    this.style.filter = 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))';
-  });
-});
-
-// Add rotation animation on page load for donut charts
+// Initialize Charts
 document.addEventListener('DOMContentLoaded', function() {
+  // Create line chart
+  const clickChart = createModernLineChart();
+  
+  // Get data lengths
+  const countryDataLength = {!! json_encode($countries->keys()) !!}.length;
+  const deviceDataLength = {!! json_encode($devices->keys()) !!}.length;
+  const browserDataLength = {!! json_encode($browsers->keys()) !!}.length;
+
+  // Create donut charts
+  const countryChart = createEnhancedDonutChart(
+    'countryChart',
+    {!! json_encode($countries->keys()) !!},
+    {!! json_encode($countries->values()) !!},
+    getColorPairs('countryChart', countryDataLength)
+  );
+
+  const deviceChart = createEnhancedDonutChart(
+    'deviceChart',
+    {!! json_encode($devices->keys()) !!},
+    {!! json_encode($devices->values()) !!},
+    getColorPairs('deviceChart', deviceDataLength)
+  );
+
+  const browserChart = createEnhancedDonutChart(
+    'browserChart',
+    {!! json_encode($browsers->keys()) !!},
+    {!! json_encode($browsers->values()) !!},
+    getColorPairs('browserChart', browserDataLength)
+  );
+
+  // Enhanced chart hover effects with glow
+  document.querySelectorAll('canvas').forEach(canvas => {
+    canvas.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.03) rotate(1deg)';
+      this.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      this.style.filter = 'drop-shadow(0 12px 24px rgba(0, 0, 0, 0.15)) brightness(1.05)';
+    });
+    
+    canvas.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1) rotate(0deg)';
+      this.style.filter = 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))';
+    });
+  });
+
+  // Add rotation animation on page load for donut charts
   setTimeout(() => {
     const donutCharts = ['countryChart', 'deviceChart', 'browserChart'];
     donutCharts.forEach((chartId, index) => {
@@ -959,7 +700,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* ... previous styles remain same ... */
+/* Animated gradient for header */
+@keyframes gradient-x {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite alternate;
+}
 
 /* Enhanced donut chart specific styles */
 .donut-container {
@@ -986,13 +735,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .donut-container:hover::after {
   opacity: 1;
-}
-
-/* Chart tooltip enhancement */
-.chart-tooltip {
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Donut slice hover animation */
@@ -1026,19 +768,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-/* Print optimization for charts */
-@media print {
-  .donut-container {
-    break-inside: avoid;
-  }
-  
-  #countryChart,
-  #deviceChart,
-  #browserChart {
-    filter: none !important;
-    transform: none !important;
-  }
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 </style>
-
 @endsection

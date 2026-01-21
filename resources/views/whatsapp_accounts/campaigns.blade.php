@@ -46,66 +46,44 @@
                     New Campaign
                 </button>
             </div>
+<!-- STATS CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-            <!-- STATS CARDS -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white rounded-xl p-4 shadow border-l-4 border-indigo-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Total Campaigns</p>
-                            <p class="text-2xl font-bold" x-text="campaigns.length"></p>
-                        </div>
-                        <div class="p-2 bg-indigo-50 rounded-lg">
-                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    <!-- Sent Campaigns -->
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-green-500">
+        <p class="text-sm text-gray-500">Sent Campaigns</p>
+        <p class="text-2xl font-bold"
+           x-text="(campaigns || []).filter(c => c.status === 'sent').length">
+        </p>
+    </div>
 
-                <div class="bg-white rounded-xl p-4 shadow border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Sent</p>
-                            <p class="text-2xl font-bold" x-text="campaigns.filter(c => c.status === 'sent').length"></p>
-                        </div>
-                        <div class="p-2 bg-green-50 rounded-lg">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    <!-- Total Campaigns -->
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-indigo-500">
+        <p class="text-sm text-gray-500">Total Campaigns</p>
+        <p class="text-2xl font-bold"
+           x-text="(campaigns || []).length">
+        </p>
+    </div>
 
-                <div class="bg-white rounded-xl p-4 shadow border-l-4 border-blue-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Draft</p>
-                            <p class="text-2xl font-bold" x-text="campaigns.filter(c => c.status !== 'sent').length"></p>
-                        </div>
-                        <div class="p-2 bg-blue-50 rounded-lg">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    <!-- Active Campaigns -->
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-green-500">
+        <p class="text-sm text-gray-500">Active Campaigns</p>
+        <p class="text-2xl font-bold"
+           x-text="(campaigns || []).filter(c => c.status !== 'sent').length">
+        </p>
+    </div>
 
-                <div class="bg-white rounded-xl p-4 shadow border-l-4 border-purple-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Contacts</p>
-                            <p class="text-2xl font-bold" x-text="contacts.length"></p>
-                        </div>
-                        <div class="p-2 bg-purple-50 rounded-lg">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Groups -->
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-purple-500">
+        <p class="text-sm text-gray-500">Groups</p>
+        <p class="text-2xl font-bold"
+           x-text="(groups || []).length">
+        </p>
+    </div>
+
+</div>
+    
+
 
         <!-- CAMPAIGNS LIST -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
@@ -156,19 +134,19 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <button
-                                            type="button"
-                                            @click="openSendModal(c)"
-                                            :disabled="c.status === 'sent'"
-                                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all"
-                                            :class="c.status === 'sent'
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg'"
-                                        >
+     <button
+    type="button"
+    @click="c.status !== 'sent' && openSendModal(c)"
+    :disabled="c.status === 'sent'"
+    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition
+           bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg
+           disabled:opacity-50 disabled:cursor-not-allowed"
+>
+
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                             </svg>
-                                            Send Campaign
+Send Message
                                         </button>
                                     </td>
                                 </tr>
@@ -200,74 +178,84 @@
                     </table>
                 </div>
             </div>
-
-            <!-- Mobile Cards -->
-            <div class="lg:hidden">
-                <div class="divide-y divide-gray-200">
-                    <template x-for="c in campaigns" :key="c._id">
-                        <div class="p-4 hover:bg-gray-50 transition-colors">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900" x-text="c.name"></h3>
-                                        <span
-                                            class="inline-flex items-center mt-1 px-2 py-1 rounded-full text-xs font-medium"
-                                            :class="c.status === 'sent'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'"
-                                        >
-                                            <span 
-                                                class="w-1.5 h-1.5 rounded-full mr-1"
-                                                :class="c.status === 'sent' ? 'bg-green-500' : 'bg-gray-400'"
-                                            ></span>
-                                            <span x-text="c.status"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-end">
-                                <button
-                                    type="button"
-                                    @click="openSendModal(c)"
-                                    :disabled="c.status === 'sent'"
-                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg"
-                                    :class="c.status === 'sent'
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'"
-                                >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                    </svg>
-                                    Send
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                    
-                    <div x-show="campaigns.length === 0" class="p-8 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+<!-- Mobile Cards -->
+<div class="lg:hidden">
+    <div class="divide-y divide-gray-200">
+        <template x-for="c in campaigns" :key="c._id">
+            <div class="p-4 hover:bg-gray-50 transition-colors">
+                
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        
+                        <!-- Icon -->
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15
+                                         M18 13a3 3 0 100-6
+                                         M5.436 13.683A4.001 4.001 0 017 6
+                                         h1.832c4.1 0 7.625-1.234 9.168-3v14
+                                         c-1.543-1.766-5.067-3-9.168-3H7
+                                         a3.988 3.988 0 01-1.564-.317z"/>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">No Campaigns</h3>
-                        <button
-                            @click="openCreate = true"
-                            class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-lg mt-4"
-                        >
-                            Create Campaign
-                        </button>
+
+                        <!-- Name + Status -->
+                        <div>
+                            <h3 class="font-semibold text-gray-900" x-text="c.name"></h3>
+
+                            <span
+                                class="inline-flex items-center mt-1 px-2 py-1 rounded-full text-xs font-medium"
+                                :class="c.status === 'sent'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-gray-100 text-gray-700'"
+                            >
+                                <span
+                                    class="w-1.5 h-1.5 rounded-full mr-1"
+                                    :class="c.status === 'sent' ? 'bg-green-500' : 'bg-gray-400'"
+                                ></span>
+                                <span x-text="c.status.charAt(0).toUpperCase() + c.status.slice(1)"></span>
+                            </span>
+                        </div>
+
                     </div>
                 </div>
+
+                <!-- Action -->
+           <button
+    type="button"
+    @click="c.status !== 'sent' && openSendModal(c)"
+    :disabled="c.status === 'sent'"
+    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition
+           bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg
+           disabled:opacity-50 disabled:cursor-not-allowed"
+>
+
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                        Send
+                    </button>
+                </div>
+
             </div>
+        </template>
+
+        <!-- Empty -->
+        <div x-show="campaigns.length === 0" class="p-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">No Campaigns</h3>
+            <button
+                @click="openCreate = true"
+                class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600
+                       text-white px-5 py-2.5 rounded-lg mt-4"
+            >
+                Create Campaign
+            </button>
         </div>
     </div>
+</div>
+
 
     <!-- CREATE MODAL -->
     <div
@@ -388,7 +376,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-xl font-bold text-white">Send Campaign</h2>
+<h2 class="text-xl font-bold text-white">Send Message</h2>
                             <p class="text-sm text-indigo-100">
                                 Campaign: <span class="font-semibold" x-text="activeCampaign?.name"></span>
                             </p>
@@ -407,38 +395,57 @@
                 <!-- Contacts Selection -->
                 <div class="mb-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Select Contacts</h3>
+<h3 class="text-lg font-semibold text-gray-800">Select Recipients</h3>
+<p class="text-sm text-gray-500">
+    This campaign can be used multiple times
+</p>
                         <div class="text-sm text-gray-600">
-                            Selected: <span class="font-bold" x-text="numbers.length"></span> contacts
+Selected:
+<span class="font-bold" x-text="selectedGroup ? 1 : 0"></span> group
                         </div>
                     </div>
                     
                     <div class="border border-gray-300 rounded-lg overflow-hidden">
                         <div class="max-h-80 overflow-y-auto">
-                            <template x-for="c in contacts" :key="c._id">
-                                <label class="flex items-center gap-4 px-4 py-3 border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
-                                    <div class="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            :value="(c.mobile || '').replace(/\D/g,'')"
-                                            x-model="numbers"
-                                            class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                                        >
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <span class="font-medium text-gray-900" x-text="c.name"></span>
-                                            <span class="text-sm font-mono text-gray-600" x-text="c.mobile"></span>
-                                        </div>
-                                        <div class="flex items-center gap-2 mt-1">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                            </svg>
-                                            <span class="text-xs text-gray-500">Contact</span>
-                                        </div>
-                                    </div>
-                                </label>
-                            </template>
+<template x-for="g in groups" :key="g._id">
+    <label
+        class="flex items-center gap-4 px-4 py-3 border-b border-gray-200
+               hover:bg-gray-50 transition-colors cursor-pointer"
+    >
+        <div class="flex items-center">
+            <input
+                type="radio"
+                name="broadcast_group"
+:value="g._id"
+                x-model="selectedGroup"
+                class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+            >
+        </div>
+
+        <div class="flex-1">
+            <div class="flex items-center justify-between">
+                <span class="font-medium text-gray-900" x-text="g.name"></span>
+                <span class="text-sm text-gray-600"
+                      x-text="g.contacts_count + ' contacts'">
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2 mt-1">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2
+                             c0-.656-.126-1.283-.356-1.857M7 20H2v-2
+                             a3 3 0 015.356-1.857M7 20v-2
+                             c0-.656.126-1.283.356-1.857
+                             m0 0a5.002 5.002 0 019.288 0
+                             M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="text-xs text-gray-500">Broadcast Group</span>
+            </div>
+        </div>
+    </label>
+</template>
+
                         </div>
                     </div>
                 </div>
@@ -470,41 +477,43 @@
                     >
                         Cancel
                     </button>
-                    <button
-                        type="button"
-                        @click="sendCampaign()"
-                        :disabled="numbers.length === 0"
-                        class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span x-show="numbers.length > 0">Send to </span>
-                        <span x-show="numbers.length > 0" x-text="numbers.length" class="font-bold"></span>
-                        <span x-show="numbers.length > 0"> contact(s)</span>
-                        <span x-show="numbers.length === 0">Select contacts to send</span>
-                    </button>
+   <button
+    type="button"
+    @click="sendCampaign()"
+    :disabled="!selectedGroup"
+    class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600
+           text-white rounded-lg hover:shadow-lg transition-shadow font-medium
+           disabled:opacity-50 disabled:cursor-not-allowed"
+>
+    <span x-show="selectedGroup">Send Campaign</span>
+    <span x-show="!selectedGroup">Select group to send</span>
+</button>
+
                 </div>
             </div>
         </div>
     </div>
 
 </div>
-
 <script>
 function campaignApp() {
     return {
         campaigns: @json($campaigns),
-        contacts: @json($contacts),
+        groups: @json($groups),
 
         openCreate: false,
         openSend: false,
 
         newName: '',
         activeCampaign: null,
-        numbers: [],
+        selectedGroup: null,
 
         csrf: '',
 
         init() {
-            this.csrf = document.querySelector('meta[name="csrf-token"]').content;
+            this.csrf = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content');
         },
 
         createCampaign() {
@@ -516,7 +525,9 @@ function campaignApp() {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': this.csrf
                 },
-                body: JSON.stringify({ name: this.newName })
+                body: JSON.stringify({
+                    name: this.newName
+                })
             })
             .then(r => r.json())
             .then(res => {
@@ -524,48 +535,57 @@ function campaignApp() {
                     this.campaigns.unshift(res.data);
                     this.newName = '';
                     this.openCreate = false;
+                } else {
+                    alert(res.message || 'Create failed');
                 }
+            })
+            .catch(e => {
+                console.error(e);
+                alert('Create error');
             });
         },
 
         openSendModal(c) {
             this.activeCampaign = c;
-            this.numbers = [];
+            this.selectedGroup = null;
             this.openSend = true;
         },
 
-        sendCampaign() {
-            if (this.numbers.length === 0) return;
+      sendCampaign() {
+    if (!this.selectedGroup || !this.activeCampaign) {
+        alert('Select campaign & group');
+        return;
+    }
 
-            fetch('/whatsapp-campaigns/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': this.csrf
-                },
-                body: JSON.stringify({
-                    campaign_id: this.activeCampaign._id,
-                    numbers: this.numbers
-                })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    // ✅ backend se aaya hua updated campaign
-                    const i = this.campaigns.findIndex(
-                        c => c._id === res.campaign._id
-                    );
-                    if (i !== -1) {
-                        this.campaigns[i] = res.campaign;
-                    }
+    fetch('/whatsapp-campaigns/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': this.csrf
+        },
+        body: JSON.stringify({
+            campaign_id: this.activeCampaign._id, // ✅ COMMA ADDED
+            group_id: this.selectedGroup,
+            template: 'hello_world'
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            this.openSend = false;
 
-                    this.openSend = false;
-                } else {
-                    alert('Send failed');
-                }
-            })
-            .catch(e => console.error(e));
+            // optional UI update
+            this.activeCampaign.status = 'sent';
+        } else {
+            alert(res.message || 'Send failed');
         }
+    })
+    .catch(e => {
+        console.error(e);
+        alert('Send error');
+    });
+}
+
     }
 }
 </script>

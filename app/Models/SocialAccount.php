@@ -13,18 +13,14 @@ class SocialAccount extends Model
         'user_id',
         'platform',
         'status',
-        'credentials', // user level token
-        'pages',       // 🔥 multiple pages
+        'credentials', 
+        'pages',       
     ];
 
     protected $casts = [
         'credentials' => 'array',
         'pages'       => 'array',
     ];
-
-    /* ===============================
-       SCOPES
-    =============================== */
 
     public function scopeForUser($query, $userId)
     {
@@ -35,10 +31,6 @@ class SocialAccount extends Model
     {
         return $query->where('status', 'connected');
     }
-
-    /* ===============================
-       HELPERS
-    =============================== */
 
     public function facebookPages(): array
     {

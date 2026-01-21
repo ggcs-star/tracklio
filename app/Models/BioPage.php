@@ -10,18 +10,24 @@ class BioPage extends Model
     protected $collection = 'bio_pages';
 
     protected $fillable = [
-        'user_id',
-        'title',
-        'slug',
-        'description',
-        'links',        // array of buttons/links
-        'is_active',
-    ];
+    'user_id',
+    'title',
+    'slug',
+    'links',
+    'settings',
+    'design',
+    'social_links', 
+    'is_active',
+];
 
-    protected $casts = [
-        'links'     => 'array',
-        'is_active'=> 'boolean',
-    ];
+protected $casts = [
+    'links'        => 'array',
+    'settings'     => 'array',
+    'design'       => 'array',
+    
+    'is_active'    => 'boolean',
+];
+
 
     public $timestamps = true;
 }

@@ -12,11 +12,11 @@ class QrClickLog extends Model
     protected $fillable = [
         'qr_id',
         'short_code',
-        'type',          // link | qr
+        'type',         
         'ip_address',
         'city',
         'country',
-        'device_type',  // Mobile | Desktop
+        'device_type',  
         'browser',
     ];
 }

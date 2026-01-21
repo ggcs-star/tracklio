@@ -24,20 +24,46 @@
         </div>
         
         <div class="flex items-center gap-3 sm:gap-4">
-            <div class="relative hidden sm:block flex-1 max-w-xs">
-                <input type="text" 
-                       placeholder="Search links..." 
-                       class="pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full max-w-xs">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <button class="bg-white border border-gray-300 hover:border-gray-400 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
+        <form method="GET" action="{{ route('short-links.index') }}" id="searchForm">
+    <div class="relative hidden sm:block flex-1 max-w-xs">
+
+        <input type="text"
+               id="searchInput"
+               name="search"
+               value="{{ request('search') }}"
+               placeholder="Search links..."
+               class="pl-10 pr-9 py-2.5 sm:py-3 border border-gray-300 rounded-xl
+                      focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500
+                      w-full max-w-xs">
+
+        {{-- search icon --}}
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+
+        {{-- ❌ clear icon --}}
+        <button type="button"
+                id="clearSearchBtn"
+                class="hidden absolute right-3 top-1/2 -translate-y-1/2
+                       text-gray-400 hover:text-red-500 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                      d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+    </div>
+</form>
+
+
+            <!-- <button class="bg-white border border-gray-300 hover:border-gray-400 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                 </svg>
                 <span class="text-xs sm:text-sm font-medium text-gray-700 hidden xs:inline">Filter</span>
-            </button>
+            </button> -->
         </div>
     </div>
 </div>
@@ -268,31 +294,65 @@
             </tbody>
         </table>
     </div>
-    
-    @if(count($links) > 0)
-    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
-        <div class="flex items-center justify-between text-xs sm:text-sm">
-            <div class="text-gray-600">
-                Showing <span class="font-medium">{{ count($links) }}</span> links
-            </div>
-            <div class="flex items-center gap-1">
-                <button class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <button class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center bg-indigo-600 text-white rounded-lg font-medium">
-                    1
-                </button>
-                <button class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
-            </div>
+  @if ($links->hasPages())
+<div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs sm:text-sm">
+
+        {{-- LEFT: Showing info --}}
+        <div class="text-gray-600">
+            Showing
+            <span class="font-medium">{{ $links->firstItem() }}</span>
+            to
+            <span class="font-medium">{{ $links->lastItem() }}</span>
+            of
+            <span class="font-medium">{{ $links->total() }}</span>
+            links
         </div>
+
+        {{-- RIGHT: Pagination --}}
+        <div class="flex items-center gap-1">
+            {{-- Previous --}}
+            <a href="{{ $links->previousPageUrl() }}"
+               class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg
+               {{ $links->onFirstPage() ? 'text-gray-300 pointer-events-none' : 'text-gray-600 hover:bg-gray-100' }}">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                          d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+
+            {{-- Page numbers --}}
+            @foreach ($links->getUrlRange(1, $links->lastPage()) as $page => $url)
+                @if ($page == $links->currentPage())
+                    <span
+                        class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center
+                               bg-indigo-600 text-white rounded-lg font-medium">
+                        {{ $page }}
+                    </span>
+                @else
+                    <a href="{{ $url }}"
+                       class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center
+                              text-gray-600 hover:bg-gray-100 rounded-lg">
+                        {{ $page }}
+                    </a>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            <a href="{{ $links->nextPageUrl() }}"
+               class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg
+               {{ $links->hasMorePages() ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-300 pointer-events-none' }}">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                          d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+
     </div>
-    @endif
+</div>
+@endif
+
 </div>
 
 {{-- EDIT MODAL --}}
@@ -477,5 +537,62 @@ a {
     }
 }
 </style>
+
+<script>
+let searchTimer = null;
+
+const input    = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearSearchBtn');
+
+input.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+
+    // ❌ icon show / hide
+    clearBtn.classList.toggle('hidden', !this.value);
+
+    searchTimer = setTimeout(() => {
+        fetchLinks(this.value);
+    }, 300);
+});
+
+clearBtn.addEventListener('click', function () {
+    input.value = '';
+    clearBtn.classList.add('hidden');
+
+    fetchLinks(''); // 🔥 load ALL links
+});
+
+function fetchLinks(query) {
+    const url = new URL(window.location.href);
+
+    if (query) {
+        url.searchParams.set('search', query);
+    } else {
+        url.searchParams.delete('search');
+    }
+
+    fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 🔁 replace ONLY table + pagination
+        document.querySelector('table').innerHTML =
+            doc.querySelector('table').innerHTML;
+
+        const pagination = document.querySelector('[class*="border-t"]');
+        const newPagination = doc.querySelector('[class*="border-t"]');
+        if (pagination && newPagination) {
+            pagination.innerHTML = newPagination.innerHTML;
+        }
+
+        // URL update without reload
+        history.replaceState(null, '', url);
+    });
+}
+</script>
 
 @endsection

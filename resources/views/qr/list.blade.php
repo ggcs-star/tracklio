@@ -2,6 +2,9 @@
 @section('title','QR Codes')
 
 @section('content')
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
 
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold">QR Codes</h1>
@@ -28,38 +31,63 @@
 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
 @foreach($qrCodes as $qr)
 <div class="bg-white rounded-xl border p-4 relative group">
-<img
-  src="{{ $qr->qr_image_url 
-        ? asset('storage/'.$qr->qr_image_url) 
-        : asset('images/qr-placeholder.png') }}"
+    <!-- QR Code with Logo -->
+    <div class="relative">
+       <img
+  src="{{ $qr->qr_image_url ? Storage::disk('public')->url($qr->qr_image_url) : asset('images/qr-placeholder.png') }}"
   alt="{{ $qr->title }}"
   class="w-full h-48 object-contain mb-3 rounded-lg border"
 />
 
-
+        <!-- Logo Overlay (if exists) -->
+        @if($qr->logo_url)
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <img 
+                src="{{ asset('storage/'.$qr->logo_url) }}" 
+                alt="Logo"
+                class="w-10 h-10 object-contain bg-white p-1 rounded-full shadow-md"
+            />
+        </div>
+        @endif
+        
+        <!-- Design Template Badge -->
+        @if($qr->design_template && $qr->design_template != 'default')
+        <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs rounded bg-gray-800 text-white">
+                {{ ucfirst($qr->design_template) }}
+            </span>
+        </div>
+        @endif
+    </div>
 
     <h3 class="font-semibold text-gray-800">{{ $qr->title }}</h3>
     <p class="text-xs text-gray-500">{{ $qr->scans }} scans</p>
     
     <div class="flex gap-2 mt-4">
-     <button
-    type="button"
-    onclick="openQrDetails(this)"
-    data-qr-id="{{ $qr->_id }}"
-    data-title="{{ $qr->title }}"
-    data-type="{{ $qr->qr_type }}"
-    data-mode="{{ $qr->qr_mode }}"
-    data-scans="{{ $qr->scans }}"
-data-image="{{ asset('storage/'.$qr->qr_image_url) }}"
-data-download="{{ $qr->qr_image_url ? asset('storage/'.$qr->qr_image_url) : '' }}"
-    data-status="{{ $qr->is_active ? 'Active' : 'Inactive' }}"
-    data-created="{{ $qr->created_at->format('M d, Y') }}"
-    data-short-url="{{ $qr->short_url }}"
-data-qr-data="{{ e($qr->qr_mode === 'dynamic' ? url('/qr/'.$qr->short_url) : $qr->qr_data) }}"
-    data-edit-url="{{ route('qr.edit', $qr->_id) }}"
-    class="flex-1 text-center px-3 py-1.5 text-sm rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50">
-    👁 View
-</button>
+        <button
+            type="button"
+            onclick="openQrDetails(this)"
+            data-qr-id="{{ $qr->_id }}"
+            data-title="{{ $qr->title }}"
+            data-type="{{ $qr->qr_type }}"
+            data-mode="{{ $qr->qr_mode }}"
+            data-scans="{{ $qr->scans }}"
+            data-image="{{ $qr->qr_image_url ? Storage::disk('public')->url($qr->qr_image_url) : '' }}"
+data-download="{{ $qr->qr_image_url ? Storage::disk('public')->url($qr->qr_image_url) : '' }}"
+            data-status="{{ $qr->is_active ? 'Active' : 'Inactive' }}"
+            data-created="{{ $qr->created_at->format('M d, Y') }}"
+            data-short-url="{{ $qr->short_url }}"
+            data-qr-data="{{ e($qr->qr_mode === 'dynamic' ? url('/qr/'.$qr->short_url) : $qr->qr_data) }}"
+            
+            data-logo-url="{{ $qr->logo_url ? asset('storage/'.$qr->logo_url) : '' }}"
+            data-design-template="{{ $qr->design_template ?: 'default' }}"
+            data-design-data="{{ e($qr->design ? json_encode($qr->design) : '') }}"
+            
+            data-edit-url="{{ route('qr.edit', $qr->_id) }}"
+            
+            class="flex-1 text-center px-3 py-1.5 text-sm rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50">
+            👁 View
+        </button>
 
         <a href="{{ route('qr.edit', $qr->_id) }}"
            class="flex-1 text-center px-3 py-1.5 text-sm rounded-lg border border-indigo-500 text-indigo-600 hover:bg-indigo-50">
@@ -72,7 +100,7 @@ data-qr-data="{{ e($qr->qr_mode === 'dynamic' ? url('/qr/'.$qr->short_url) : $qr
             @csrf
             @method('DELETE')
             <button type="submit"
-           class="flex-1 text-center px-3 py-1.5 text-sm rounded-lg border border-indigo-500 text-indigo-600 hover:bg-indigo-50">
+                    class="flex-1 text-center px-3 py-1.5 text-sm rounded-lg border border-red-500 text-red-600 hover:bg-red-50">
                 🗑 Delete
             </button>
         </form>
@@ -170,14 +198,18 @@ data-qr-data="{{ e($qr->qr_mode === 'dynamic' ? url('/qr/'.$qr->short_url) : $qr
 
 <script>
 // Function to open modal with QR details
+// Function to open modal with QR details - UPDATED VERSION
 function openQrDetails(button) {
-
     // 🔑 short code
     const shortUrl = button.getAttribute('data-short-url');
 
     // 🖼️ QR IMAGE URL (SAFE FOR LOCAL + LIVE)
-const fullImageUrl = button.getAttribute('data-image');
+    const fullImageUrl = button.getAttribute('data-image');
 
+    // 🔥 NEW: Logo and Design data
+    const logoUrl = button.getAttribute('data-logo-url');
+    const designTemplate = button.getAttribute('data-design-template');
+    const designDataStr = button.getAttribute('data-design-data');
 
     // OTHER DATA
     const qrId = button.getAttribute('data-qr-id');
@@ -191,10 +223,43 @@ const fullImageUrl = button.getAttribute('data-image');
     const editUrl = button.getAttribute('data-edit-url');
 
     // SET IMAGE + DOWNLOAD
-    document.getElementById('modalQrImage').src = fullImageUrl;
-document.getElementById('modalDownloadLink').href =
-    button.getAttribute('data-download');
-document.getElementById('modalTitle').textContent = title;
+    const qrImage = document.getElementById('modalQrImage');
+    qrImage.src = fullImageUrl;
+    
+    // 🔥 Clear any previous logo overlay and design badge
+    const modalPreview = qrImage.parentElement;
+    const existingLogo = modalPreview.querySelector('.logo-overlay');
+    const existingDesignBadge = modalPreview.querySelector('.design-badge');
+    if (existingLogo) existingLogo.remove();
+    if (existingDesignBadge) existingDesignBadge.remove();
+
+    // 🔥 Add logo overlay if logo exists
+    if (logoUrl && logoUrl.trim() !== '') {
+        modalPreview.classList.add('relative');
+        const logoOverlay = document.createElement('div');
+        logoOverlay.className = 'logo-overlay absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10';
+        logoOverlay.innerHTML = `
+            <div class="bg-white p-1.5 rounded-full shadow-lg">
+                <img src="${logoUrl}" alt="Logo" class="w-12 h-12 object-contain">
+            </div>
+        `;
+        modalPreview.appendChild(logoOverlay);
+    }
+
+    // 🔥 Add design template badge
+    if (designTemplate && designTemplate !== 'default') {
+        const designBadge = document.createElement('div');
+        designBadge.className = 'design-badge mt-3 text-center';
+        designBadge.innerHTML = `
+            <span class="inline-block px-3 py-1 text-xs bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium">
+                ${designTemplate.charAt(0).toUpperCase() + designTemplate.slice(1)} Design
+            </span>
+        `;
+        modalPreview.parentNode.insertBefore(designBadge, modalPreview.nextSibling);
+    }
+
+    document.getElementById('modalDownloadLink').href = button.getAttribute('data-download');
+    document.getElementById('modalTitle').textContent = title;
 
     // TEXT DATA
     document.getElementById('modalType').textContent = type;
@@ -220,17 +285,75 @@ document.getElementById('modalTitle').textContent = title;
     const shortUrlSection = document.getElementById('shortUrlSection');
     if (mode === 'dynamic' && shortUrl) {
         shortUrlSection.classList.remove('hidden');
-     document.getElementById('modalShortUrl').value =
-    `${window.location.origin}/qr/${shortUrl}`;
-
+        document.getElementById('modalShortUrl').value =
+            `${window.location.origin}/qr/${shortUrl}`;
     } else {
         shortUrlSection.classList.add('hidden');
+    }
+
+    // 🔥 Add design details if available
+    if (designDataStr && designDataStr.trim() !== '' && designDataStr !== 'null') {
+        try {
+            const designData = JSON.parse(designDataStr);
+            
+            // Optional: Display design details in modal
+            const designDetailsElem = document.getElementById('modalDesignDetails');
+            if (!designDetailsElem) {
+                // Create a new section for design details
+                const detailsGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
+                if (detailsGrid) {
+                    const designSection = document.createElement('div');
+                    designSection.id = 'modalDesignDetails';
+                    designSection.className = 'md:col-span-2 border-t pt-4 mt-4';
+                    designSection.innerHTML = `
+                        <label class="block text-sm font-medium text-gray-500 mb-2">Design Details</label>
+                        <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-sm">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>Template: <span class="font-medium">${designTemplate}</span></div>
+                                <div>Dot Style: <span class="font-medium">${designData.dot_style || 'default'}</span></div>
+                                <div>Eye Style: <span class="font-medium">${designData.eye_style || 'default'}</span></div>
+                                <div>Color Type: <span class="font-medium">${designData.color_type || 'single'}</span></div>
+                            </div>
+                        </div>
+                    `;
+                    detailsGrid.appendChild(designSection);
+                }
+            }
+        } catch (e) {
+            console.error('Error parsing design data:', e);
+        }
+    } else {
+        // Remove design details section if exists
+        const existingDesignSection = document.getElementById('modalDesignDetails');
+        if (existingDesignSection) existingDesignSection.remove();
     }
 
     // SHOW MODAL
     document.getElementById('qrModal').classList.remove('hidden');
 }
 
+// Function to close modal - UPDATED
+function closeModal() {
+    // 🔥 Clean up dynamic elements
+    const modal = document.getElementById('qrModal');
+    const qrImage = document.getElementById('modalQrImage');
+    const modalPreview = qrImage.parentElement;
+    
+    // Remove logo overlay
+    const existingLogo = modalPreview.querySelector('.logo-overlay');
+    if (existingLogo) existingLogo.remove();
+    
+    // Remove design badge
+    const existingDesignBadge = modalPreview.querySelector('.design-badge');
+    if (existingDesignBadge) existingDesignBadge.remove();
+    
+    // Remove design details section
+    const designSection = document.getElementById('modalDesignDetails');
+    if (designSection) designSection.remove();
+    
+    // Hide modal
+    modal.classList.add('hidden');
+}
 // Function to copy short URL
 function copyShortUrl() {
     const input = document.getElementById('modalShortUrl');
@@ -259,9 +382,6 @@ function copyShortUrl() {
 }
 
 // Function to close modal
-function closeModal() {
-    document.getElementById('qrModal').classList.add('hidden');
-}
 
 // Close modal when clicking outside
 document.getElementById('qrModal').addEventListener('click', function(e) {
@@ -277,5 +397,39 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+<style>
+/* Logo overlay styles */
+.logo-overlay {
+    animation: fadeIn 0.3s ease-in;
+}
 
+.logo-overlay img {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Design badge animation */
+.design-badge {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* QR container styling */
+#qrPreview, #modalQrImage {
+    background: linear-gradient(45deg, #f9fafb 25%, transparent 25%),
+                linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f9fafb 75%),
+                linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+</style>
 @endsection

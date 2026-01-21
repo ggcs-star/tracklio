@@ -17,7 +17,12 @@ use App\Http\Controllers\{
     WhatsAppBulkController,
     WhatsAppCampaignController,
     QrBuilderController,
-    BioPageController
+    BioPageController,
+    BioSocialController,
+    MongoPasswordResetController,
+    ProfileController,
+    NotificationController,
+    BroadcastGroupController
 };
 
 use App\Models\QrLink;
@@ -73,8 +78,14 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/forgot-password', fn () => view('auth.forgot-password'))
-    ->name('password.forgot.page');
+Route::post('/forgot-password', [MongoPasswordResetController::class, 'sendResetLink'])
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [MongoPasswordResetController::class, 'showResetForm'])
+    ->name('password.reset');
+
+Route::post('/reset-password', [MongoPasswordResetController::class, 'resetPassword'])
+    ->name('password.update');
 
 
 /*
@@ -89,8 +100,27 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+   Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile');
 
-    // LIST PAGE
+   
+   Route::post('/profile/avatar/remove', [ProfileController::class, 'removeAvatar'])
+     ->name('profile.avatar.remove');
+
+    Route::post('/profile/update', [ProfileController::class, 'update'])
+        ->name('profile.update');   
+// latest 10 (drawer default)
+Route::get('/notifications', [NotificationController::class, 'latest']);
+
+// all notifications (for "view all" INSIDE drawer)
+Route::get('/notifications/all', [NotificationController::class, 'all']);
+
+Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+Route::post('/notifications/mark-read', [NotificationController::class, 'markAllRead']);
+Route::post('/notifications/{id}/toggle', [NotificationController::class, 'toggleRead']);
+Route::delete('/notifications-clear-all', [NotificationController::class, 'clearAll']);
+
+
   // Bio dashboard
 Route::get('/bio', [BioPageController::class, 'index'])
     ->name('bio.index');
@@ -103,7 +133,23 @@ Route::get('/bio/{id}/edit', [BioPageController::class, 'edit'])->name('bio.edit
 Route::post('/bio/delete', [BioPageController::class, 'delete'])
     ->name('bio.delete');
 
+Route::post(
+        '/bio/{id}/social/add',
+        [BioSocialController::class, 'add']
+    )->name('bio.social.add');
 
+    Route::post(
+        '/bio/{id}/social/delete',
+        [BioSocialController::class, 'delete']
+    )->name('bio.social.delete');
+  Route::post('bio/social/reorder', [BioSocialController::class, 'reorder']) // NEW
+        ->name('bio.social.reorder');
+    Route::post(
+        '/bio/{id}/social/toggle',
+        [BioSocialController::class, 'toggle']
+    )->name('bio.social.toggle');
+
+  Route::post('bio/social/display/save', [BioSocialController::class, 'saveDisplay'])->name('bio.social.display.save');
 
 });
 
@@ -154,10 +200,12 @@ Route::post('/bio/delete', [BioPageController::class, 'delete'])
     Route::get('/contacts-page', function () {
         return view('contacts.index');
     });
-    /* WhatsApp */
-    Route::get('/whatsapp-accounts', [WhatsAppAccountController::class, 'index']);
-    Route::post('/whatsapp-accounts', [WhatsAppAccountController::class, 'store']);
-    Route::delete('/whatsapp-accounts/{id}', [WhatsAppAccountController::class, 'destroy']);
+
+Route::get('/whatsapp-accounts', [WhatsAppAccountController::class, 'page'])
+    ->name('whatsapp.accounts');
+Route::get('/whatsapp-accounts/data', [WhatsAppAccountController::class, 'index']);
+Route::post('/whatsapp-accounts', [WhatsAppAccountController::class, 'store']);
+Route::delete('/whatsapp-accounts/{id}', [WhatsAppAccountController::class, 'destroy']);
 
     Route::post('/whatsapp/bulk/prepare', [WhatsAppBulkController::class, 'prepare']);
     Route::post('/whatsapp/bulk/execute', [WhatsAppBulkController::class, 'execute']);
@@ -165,7 +213,45 @@ Route::post('/bio/delete', [BioPageController::class, 'delete'])
     Route::get('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'index'])->name('whatsapp.campaigns');
     Route::post('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'store']);
     Route::post('/whatsapp-campaigns/send', [WhatsAppCampaignController::class, 'send']);
+  Route::get('/broadcast-groups', [BroadcastGroupController::class, 'index']);
 
+    Route::post('/broadcast-groups', [BroadcastGroupController::class, 'store']);
+    Route::put('/broadcast-groups/{id}', [BroadcastGroupController::class, 'update']);
+    Route::delete('/broadcast-groups/{id}', [BroadcastGroupController::class, 'destroy']);
+Route::get('/whatsapp-broadcasts', [BroadcastGroupController::class, 'index']);
+
+    Route::delete(
+        '/broadcast-groups/{groupId}/contacts/{contactId}',
+        [BroadcastGroupController::class, 'removeContact']
+    );
+    Route::get('/whatsapp-broadcasts', function () {
+    return view('brodcast.index');
+})->middleware('auth');
+Route::get('/api/contacts', function () {
+    return \App\Models\Contact::where('user_id', (string) auth()->id())
+        ->select('_id', 'name', 'phone_number')
+        ->orderBy('name')
+        ->get();
+})->middleware('auth');
+
+
+Route::get('/broadcast-groups/contacts', function () {
+    return response()->json([
+        'success' => true,
+        'data' => \App\Models\Contact::where(
+            'user_id',
+            (string) auth()->id()
+        )->get([
+            '_id',
+            'name',
+            'phone_number'
+        ])
+    ]);
+})->middleware('auth');
+Route::get('/broadcast-groups/contacts', [ContactsController::class, 'listForBroadcast'])
+    ->middleware('auth');
+
+    Route::post('/broadcast-groups/send', [BroadcastGroupController::class, 'send']);
     /*
     |--------------------------------------------------------------------------
     | QR BUILDER (SEPARATE MODULE)

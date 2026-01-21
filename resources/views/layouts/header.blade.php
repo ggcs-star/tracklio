@@ -42,14 +42,34 @@
                 </p>
             </div>
 
-            {{-- USER AVATAR INITIALS --}}
-            <div class="w-10 h-10 bg-[#EEF1FF] rounded-full flex items-center 
-                        justify-center text-[#4C6FFF] font-bold">
-                {{ $initials }}
-            </div>
-        </div>
+@auth
+<a href="{{ route('profile') }}"
+   class="flex items-center space-x-3 relative z-50">
 
+    {{-- USER NAME --}}
+    <div class="text-right leading-tight hidden sm:block">
+        <p class="font-semibold text-gray-800 text-sm">
+            {{ $name }}
+        </p>
+        <p class="text-xs text-gray-400 -mt-1">
+            {{ $role }}
+        </p>
     </div>
+
+    {{-- AVATAR --}}
+    @if(auth()->user()->avatar)
+        <img src="{{ asset('storage/'.auth()->user()->avatar) }}"
+             class="w-10 h-10 rounded-full object-cover cursor-pointer">
+    @else
+        <div class="w-10 h-10 bg-[#EEF1FF] rounded-full flex items-center 
+                    justify-center text-[#4C6FFF] font-bold cursor-pointer">
+            {{ $initials }}
+        </div>
+    @endif
+</a>
+@endauth
+</div>
+</div>
 
     {{-- SEARCH BAR --}}
     <div class="flex items-center bg-[#F4F6FA] px-4 h-[42px] rounded-full border

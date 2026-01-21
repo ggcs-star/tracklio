@@ -374,7 +374,7 @@ function whatsappAccounts() {
         },
 
         fetchAccounts() {
-            fetch('/whatsapp-accounts')
+            fetch('/whatsapp-accounts/data')
                 .then(res => res.json())
                 .then(res => {
                     if (res.success) {

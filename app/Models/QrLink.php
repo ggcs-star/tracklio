@@ -19,7 +19,7 @@ class QrLink extends Model
 
         // 📊 Analytics
         'visit_count',
-        'qr_scan_count', // ✅ added
+        'qr_scan_count',
 
         'foreground_type',
         'foreground_color',

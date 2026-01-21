@@ -2,91 +2,118 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QrCode;
 use App\Models\QrLink;
 use App\Models\QrClickLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class StatisticsController extends Controller
 {
     public function index(Request $request)
     {
-        /* =========================
-           DATE RANGE
-        ========================== */
-        $days = (int) $request->get('range', 30);
-        $from = Carbon::now()->subDays($days);
+        try {
+            $days = (int) $request->get('range', 30);
+            $from = Carbon::now()->subDays($days);
 
-        $userId = (string) auth()->id();
+            $userId = (string) auth()->id();
 
-        /* =========================
-           SOURCE OF TRUTH (QrLink)
-        ========================== */
-        $qrs = QrLink::where('user_id', $userId)->get();
+            $qrLinks = QrLink::where('user_id', $userId)->get();
+            $qrCodes = QrCode::where('user_id', $userId)->get();
 
-        $totalQrCodes = $qrs->count();
-        $totalVisits  = $qrs->sum('visit_count');     // ✅ ONLY from QrLink
-        $totalQrScans = $qrs->sum('qr_scan_count');   // ✅ ONLY from QrLink
-        $totalLinks   = $totalVisits;                 // same meaning
-        $activeQrs    = $qrs->count();                // future: is_active
+            $totalLinksCount =
+                $qrLinks->count() +
+                $qrCodes->count();
 
-        /* =========================
-           ANALYTICS LOGS
-        ========================== */
-        $qrIds = $qrs->pluck('_id')->map(fn ($id) => (string) $id);
+            $qrIds = collect()
+                ->merge($qrLinks->pluck('_id'))
+                ->merge($qrCodes->pluck('_id'))
+                ->map(fn ($id) => (string) $id);
 
-        $logs = QrClickLog::whereIn('qr_id', $qrIds)
-            ->where('created_at', '>=', $from)
-            ->get();
+            $logs = QrClickLog::whereIn('qr_id', $qrIds)
+                ->where('created_at', '>=', $from)
+                ->get();
 
-        /* =========================
-           GRAPHS
-        ========================== */
+            $totalQrScans      = $logs->where('type', 'qr')->count();
+            $totalLinkClicks   = $logs->where('type', 'link')->count();
+            $totalInteractions = $totalQrScans + $totalLinkClicks;
 
-        // 📊 Clicks per day
-        $clicksByDate = $logs
-            ->groupBy(fn ($log) => $log->created_at->format('Y-m-d'))
-            ->map->count();
+            $clicksByDate = $logs
+                ->groupBy(fn ($log) => $log->created_at->format('Y-m-d'))
+                ->map->count();
 
-        // 🌍 Country
-        $countries = $logs
-            ->groupBy(fn ($l) => $l->country ?: 'Unknown')
-            ->map->count()
-            ->sortDesc();
+            $countries = $logs
+                ->groupBy(fn ($l) => $l->country ?: 'Unknown')
+                ->map->count()
+                ->sortDesc();
 
-        // 📱 Device
-        $devices = $logs
-            ->groupBy(fn ($l) => $l->device_type ?: 'Unknown')
-            ->map->count();
+            $devices = $logs
+                ->groupBy(fn ($l) => $l->device_type ?: 'Unknown')
+                ->map->count();
 
-        // 🌐 Browser
-        $browsers = $logs
-            ->groupBy(fn ($l) => $l->browser ?: 'Other')
-            ->map->count();
+            $browsers = $logs
+                ->groupBy(fn ($l) => $l->browser ?: 'Other')
+                ->map->count();
 
-        // 🔀 QR vs Link split
-        $typeSplit = [
-            'qr'   => $logs->where('type', 'qr')->count(),
-            'link' => $logs->where('type', 'link')->count(),
-        ];
+            $typeSplit = [
+                'qr'   => $totalQrScans,
+                'link' => $totalLinkClicks,
+            ];
 
-        return view('statistics.index', [
-            /* ===== CARDS ===== */
-            'totalQrCodes' => $totalQrCodes,
-            'totalLinks'   => $totalLinks,
-            'totalVisits'  => $totalVisits,
-            'totalQrScans' => $totalQrScans,
-            'activeQrs'    => $activeQrs,
+            return view('statistics.index', [
+                'totalLinksCount'   => $totalLinksCount,
+                'totalQrScans'      => $totalQrScans,
+                'totalLinkClicks'   => $totalLinkClicks,
+                'totalInteractions' => $totalInteractions,
+                'days'              => $days,
+                'clicksByDate'      => $clicksByDate,
+                'countries'         => $countries,
+                'devices'           => $devices,
+                'browsers'          => $browsers,
+                'typeSplit'         => $typeSplit,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Statistics index error', [
+                'user_id' => auth()->id(),
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
 
-            /* ===== FILTER ===== */
-            'days' => $days,
+            abort(500);
+        }
+    }
 
-            /* ===== CHART DATA ===== */
-            'clicksByDate' => $clicksByDate,
-            'countries'    => $countries,
-            'devices'      => $devices,
-            'browsers'     => $browsers,
-            'typeSplit'    => $typeSplit,
-        ]);
+    public function scanQrCode($id, Request $request)
+    {
+        try {
+            $qr = QrCode::where('_id', $id)->firstOrFail();
+
+            QrClickLog::create([
+                'qr_id'       => (string) $qr->_id,
+                'short_code'  => null,
+                'type'        => 'qr',
+                'ip_address'  => $request->ip(),
+                'city'        => null,
+                'country'     => $request->header('CF-IPCountry') ?? null,
+                'device_type' => $request->header('User-Agent')
+                    ? (str_contains($request->header('User-Agent'), 'Mobile') ? 'Mobile' : 'Desktop')
+                    : null,
+                'browser'     => $request->header('User-Agent'),
+            ]);
+
+            $qr->increment('scans');
+
+            return redirect($qr->original_url ?? '/');
+        } catch (\Throwable $e) {
+            Log::error('QR scan log error', [
+                'qr_id'  => $id,
+                'ip'     => $request->ip(),
+                'error'  => $e->getMessage(),
+                'trace'  => $e->getTraceAsString(),
+            ]);
+
+            abort(404);
+        }
     }
 }

@@ -151,9 +151,23 @@
 
     <span class="font-medium">Contacts</span>
 </a>
+<a href="{{ url('/whatsapp-broadcasts') }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+          {{ request()->is('whatsapp-broadcasts*')
+             ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
+             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+
+    <!-- Broadcast Icon -->
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 12a8 8 0 0116 0M6 12a6 6 0 0112 0M8 12a4 4 0 018 0M12 16v4"/>
+    </svg>
+
+    <span class="font-medium">WhatsApp Broadcast</span>
+</a>
 
 
-<a href="{{ ('/') }}"
+<a href="{{ url('/whatsapp-accounts') }}"
    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('whatsapp-accounts')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'

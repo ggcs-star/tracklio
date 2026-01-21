@@ -13,10 +13,10 @@ class Post extends Model
         'user_id',
         'content',
         'media_url',
-        'platforms',     // array: ['facebook','instagram']
-        'status',        // draft | processing | published | failed
-        'facebook_page_id', // optional (for multi-page support)
-        'scheduled_at',     // optional
+        'platforms',     
+        'status',        
+        'facebook_page_id', 
+        'scheduled_at',     
     ];
 
     protected $dates = [

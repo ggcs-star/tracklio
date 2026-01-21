@@ -11,14 +11,14 @@ class SocialHourlyStat extends Model
 
     protected $fillable = [
         'user_id',
-        'platform',      // facebook
+        'platform',      
         'page_id',
 
         'reach',
         'engagement',
         'followers',
 
-        'stat_date',     // 2026-01-02
-        'stat_hour',     // 0-23
+        'stat_date',     
+        'stat_hour',     
     ];
 }
