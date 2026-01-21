@@ -1,3 +1,7 @@
+<script>
+    window.isProUser = false
+</script>
+
 <div class="flex flex-col h-full">
 
   <!-- HEADER -->
@@ -39,7 +43,7 @@
       </div>
 
       <a href="{{ route('dashboard') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->is('/') ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -48,7 +52,7 @@
       </a>
 
       <a href="{{ route('posts.create') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->is('create-post') ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -71,7 +75,7 @@
       </a>
 
       <a href="{{ route('accounts') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->is('accounts') ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -84,7 +88,7 @@
       </div>
 
       <a href="{{ route('short-links.index') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->routeIs('short-links.*') 
                    ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' 
                    : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -95,7 +99,7 @@
       </a>
 
       <a href="{{ route('qr-links.index') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->is('qr-links*') ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
@@ -103,7 +107,7 @@
         <span class="font-medium">QR & Links</span>
       </a>
 <a href="{{ route('qr.builder') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('dynamic-qr*')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -118,7 +122,7 @@
 </a>
 
       <a href="{{ route('statistics.index') }}"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+         class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 {{ request()->is('statistics') ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
@@ -134,7 +138,7 @@
         <span class="font-medium">Settings</span>
       </a>
       <a href="{{ url('/contacts-page') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('contacts-page')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -152,7 +156,7 @@
     <span class="font-medium">Contacts</span>
 </a>
 <a href="{{ url('/whatsapp-broadcasts') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('whatsapp-broadcasts*')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -168,7 +172,7 @@
 
 
 <a href="{{ url('/whatsapp-accounts') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('whatsapp-accounts')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -181,7 +185,7 @@
     <span class="font-medium">WhatsApp Accounts</span>
 </a>
 <a href="{{ url('/whatsapp-campaigns') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('whatsapp-campaigns*')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -198,7 +202,7 @@
 </a>
 
 <a href="{{ route('bio.index') }}"
-   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+   class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('bio')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -231,3 +235,16 @@
   </div>
 
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window.isProUser) {
+        document.querySelectorAll('.pro-feature').forEach(el => {
+            el.addEventListener('click', e => {
+                e.preventDefault()
+                showPlanModal()
+            })
+            el.classList.add('opacity-60', 'cursor-not-allowed', 'relative')
+        })
+    }
+})
+</script>
