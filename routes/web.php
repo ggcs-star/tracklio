@@ -23,16 +23,39 @@ use App\Http\Controllers\{
     ProfileController,
     NotificationController,
     BroadcastGroupController,
-    SubscriptionController
+    SubscriptionController,
+    PlanController
 };
 
 use App\Models\QrLink;
+
+
+    // Create Razorpay plan + DB save
+    Route::post('/plans', [PlanController::class, 'create']);
+
+    // Get all active plans (for UI)
+    Route::get('/plans', [PlanController::class, 'index']);
+
+    // Deactivate a plan
+    Route::patch('/plans/{id}/deactivate', [PlanController::class, 'deactivate']);
+
 
 /*
 |--------------------------------------------------------------------------
 | QR IMAGE (SVG SERVE) – IMPORTANT
 |--------------------------------------------------------------------------
-*/
+*/Route::get('/razorpay/success', function (Request $request) {
+
+    if (auth()->check()) {
+        app(SubscriptionController::class)->syncStatus();
+    }
+
+    return redirect()->route('dashboard')
+        ->with('success', 'Subscription activated successfully 🎉');
+
+})->name('razorpay.success');
+
+
 
 
 Route::middleware('auth')->group(function () {
@@ -45,14 +68,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/subscription/cancel',
         [SubscriptionController::class, 'cancel']);
+        Route::get('/subscription/sync', [SubscriptionController::class, 'syncStatus'])
+    ->middleware('auth');
+
 });
 
-/**
- * Example protected route
- */
-Route::middleware(['auth', 'subscribed'])->get('/dashboard', function () {
-    return 'Welcome to premium dashboard';
-});
 
 Route::get('/qr-image/{code}', function ($code) {
 

@@ -45,8 +45,9 @@ return [
     'client_secret' => env('YOUTUBE_CLIENT_SECRET'),
 ],
 'razorpay' => [
-    'key' => env('RAZORPAY_KEY'),
-    'secret' => env('RAZORPAY_SECRET'),
+    'key'      => env('RAZORPAY_KEY'),
+    'secret'   => env('RAZORPAY_SECRET'),
+    'currency' => 'INR',
 ],
 
 

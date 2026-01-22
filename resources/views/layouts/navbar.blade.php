@@ -16,13 +16,10 @@
 
 <div class="w-full flex items-center justify-between gap-4">
 
-    <!-- LEFT -->
     <h2 class="text-xl font-bold hidden md:block">Dashboard</h2>
 
-    <!-- RIGHT -->
     <div class="flex items-center gap-5 ml-auto">
 
-        <!-- SEARCH -->
         <div class="hidden md:flex items-center bg-[#F1F3F9] px-4 py-2 rounded-full border w-[320px]">
             <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
@@ -30,15 +27,12 @@
             <input type="text" placeholder="Search posts..." class="bg-transparent outline-none text-sm w-full"/>
         </div>
 
-        <!-- 🔔 NOTIFICATIONS - RESPONSIVE UI -->
         <div x-data="notificationDrawer()" x-init="init()" x-cloak class="relative">
 
-            <!-- BELL ICON -->
             <button @click="toggle()"
                     class="relative focus:outline-none group p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-[#F5F7FF] hover:to-[#EFF1FF] transition-all duration-300">
                 
                 <div class="relative">
-                    <!-- UNREAD BADGE -->
                     <span x-show="unreadCount > 0"
                           x-text="unreadCount"
                           class="absolute -top-2 -right-2 bg-gradient-to-br from-red-500 to-pink-500 text-white
@@ -46,7 +40,6 @@
                                  flex items-center justify-center rounded-full
                                  ring-2 ring-white shadow-lg animate-pulse"></span>
 
-                    <!-- BELL SVG -->
                     <svg class="w-6 h-6 text-gray-700 group-hover:text-[#4C6FFF] transition-all duration-300 
                                 transform group-hover:rotate-12 group-hover:scale-110" 
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,13 +51,11 @@
                 </div>
             </button>
 
-            <!-- OVERLAY -->
             <div x-show="open"
                  x-transition.opacity.duration.200ms
                  @click="close"
                  class="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40"></div>
 
-            <!-- NOTIFICATION DRAWER - RESPONSIVE -->
             <div x-show="open"
                  x-transition:enter="notification-slide"
                  x-transition:enter-start="translate-x-full opacity-0"
@@ -75,7 +66,6 @@
                  class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-gradient-to-b from-white to-gray-50
                         z-50 shadow-[0_0_50px_-12px_rgba(0,0,0,0.25)] flex flex-col border-l border-gray-200/60">
 
-                <!-- DRAWER HEADER -->
                 <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200/70 bg-white/95">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#4C6FFF] to-[#6A5FFF] 
@@ -114,18 +104,15 @@
                     </div>
                 </div>
 
-                <!-- NOTIFICATIONS LIST -->
                 <div class="flex-1 overflow-y-auto">
                     <template x-for="note in notifications" :key="note.id">
                         <div class="relative flex items-start gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100/80 hover:bg-gray-50/80 
                                     transition-all duration-200 group"
                              :class="!note.is_read ? 'bg-gradient-to-r from-blue-50/60 to-white' : ''">
                             
-                            <!-- STATUS INDICATOR -->
                             <div x-show="!note.is_read" 
                                  class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#4C6FFF] to-[#6A5FFF]"></div>
 
-                            <!-- ICON CONTAINER -->
                             <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm"
                                  :class="!note.is_read ? 
                                          'bg-gradient-to-br from-[#4C6FFF]/10 to-[#6A5FFF]/10 ring-1 ring-[#4C6FFF]/20' : 
@@ -135,13 +122,11 @@
                                       :class="!note.is_read ? 'opacity-100' : 'opacity-80'"></span>
                             </div>
 
-                            <!-- CONTENT -->
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm text-gray-800 leading-relaxed" 
                                    x-text="note.message"></p>
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 mt-2">
-                                    <!-- TYPE BADGE -->
                                     <span class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs font-medium 
                                                   capitalize tracking-wide self-start"
                                           :class="!note.is_read ? 
@@ -150,13 +135,11 @@
                                         <span x-text="note.type.replace('_', ' ')"></span>
                                     </span>
                                     
-                                    <!-- TIME -->
                                     <p class="text-xs text-gray-500 font-medium"
                                        x-text="timeAgo(note.created_at)"></p>
                                 </div>
                             </div>
 
-                            <!-- ACTION BUTTON -->
                             <button @click="toggleRead(note)"
                                     class="flex-shrink-0 text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium transition-all duration-200
                                            transform hover:scale-105 active:scale-95 mt-2 sm:mt-0"
@@ -168,7 +151,6 @@
                         </div>
                     </template>
 
-                    <!-- EMPTY STATE -->
                     <div x-show="!notifications.length"
                          class="h-full flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center">
                         <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 
@@ -182,7 +164,6 @@
                     </div>
                 </div>
 
-                <!-- VIEW ALL FOOTER -->
                 <div class="border-t border-gray-200/70 px-4 sm:px-6 py-3 sm:py-4 bg-white/95"
                      x-show="!showAll && notifications.length === 10">
                     <button @click="fetchAll()"
@@ -201,7 +182,6 @@
                 </div>
             </div>
         </div>
-<!-- PRO GET PLAN BUTTON - ADD THIS AFTER NOTIFICATION BUT BEFORE PROFILE -->
 <button onclick="showPlanModal()"
         class="px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
                text-white text-sm font-semibold rounded-lg hover:shadow-md 
@@ -212,7 +192,6 @@
     Get Pro
 </button>
 
-<!-- MOBILE GET PLAN BUTTON -->
 <button onclick="showPlanModal()"
         class="sm:hidden flex items-center justify-center w-10 h-10 
                bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
@@ -221,7 +200,6 @@
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
     </svg>
 </button>
-        <!-- PROFILE -->
         <a href="{{ route('profile') }}" class="hidden sm:flex items-center gap-3">
             <div class="text-right">
                 <p class="font-semibold text-sm">{{ $userName }}</p>
@@ -241,6 +219,123 @@
         </a>
     </div>
 </div>
+<script>
+let razorpayInstance = null;
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+async function processPayment() {
+    const button = document.getElementById('paymentButton');
+    if (!button) {
+        console.error('Payment button not found');
+        return;
+    }
+
+    button.innerHTML = 'Opening secure payment…';
+    button.disabled = true;
+    button.classList.add('opacity-80');
+
+
+
+    try {
+        const response = await fetch('/subscription/create', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':
+                    document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                plan_id: "{{ $proPlan?->_id }}"
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.subscription_id || !data.key) {
+            throw new Error(data.message || 'Unable to start payment');
+        }
+
+        const options = {
+            key: data.key,
+            subscription_id: data.subscription_id,
+
+            name: "Tracklio",
+            description: "Pro Subscription ₹999",
+
+handler: function (response) {
+
+    fetch('/subscription/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN':
+                document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_subscription_id: response.razorpay_subscription_id,
+            razorpay_signature: response.razorpay_signature
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+
+        if (d.status === 'success') {
+
+            // ✅ SUCCESS UI
+            button.innerHTML = 'Payment Successful ✅';
+            button.disabled = true;
+
+            // ✅ CLOSE YOUR MODAL (THIS WAS MISSING)
+            setTimeout(() => {
+                hidePlanModal();
+            }, 800);
+
+            // ✅ REFRESH (OPTIONAL)
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+
+        } else {
+            alert('Payment verification failed');
+            resetPaymentButton();
+        }
+    })
+    .catch(() => {
+        alert('Verification error');
+        resetPaymentButton();
+    });
+
+
+            },
+
+            modal: {
+                ondismiss: function () {
+                    button.innerHTML = 'Subscribe at ₹999/month';
+                    button.disabled = false;
+                }
+            },
+
+            theme: {
+                color: "#4C6FFF"
+            }
+        };
+
+razorpayInstance = new Razorpay(options);
+razorpayInstance.open();
+
+
+    } catch (e) {
+        alert(e.message);
+        button.innerHTML = 'Subscribe at ₹999/month';
+        button.disabled = false;
+    }
+}
+</script>
 
 <script>
 function notificationDrawer() {
@@ -353,9 +448,18 @@ function notificationDrawer() {
 </script>
 <script>
 function showPlanModal() {
+    const btn = document.getElementById('paymentButton');
+const msg = document.getElementById('paymentSuccessMsg');
+
+if (btn) {
+    btn.innerHTML = 'Subscribe at ₹999/month';
+    btn.disabled = false;
+}
+
+if (msg) msg.classList.add('hidden');
+
     console.log('showPlanModal called');
     
-    // Create modal HTML if not exists
     if (!document.getElementById('planModal')) {
         console.log('Creating modal HTML');
         const modalHTML = `
@@ -435,6 +539,11 @@ function showPlanModal() {
                                        transition-all text-sm mb-3">
                             <i class="fas fa-lock mr-2 text-xs"></i>Subscribe at ₹999/month
                         </button>
+<div id="paymentSuccessMsg"
+     class="hidden mt-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm text-center">
+    🎉 <strong>Payment Successful!</strong><br>
+    Your Pro subscription is now active.
+</div>
 
                         {{-- SECURITY NOTE --}}
                         <p class="text-center text-xs text-gray-500">
@@ -447,7 +556,6 @@ function showPlanModal() {
         
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
-        // Add event listener for close button
         setTimeout(() => {
             const closeBtn = document.getElementById('closeModalBtn');
             if (closeBtn) {
@@ -455,7 +563,6 @@ function showPlanModal() {
                 console.log('Close button event listener added');
             }
             
-            // Add event listener for outside click
             const modal = document.getElementById('planModal');
             if (modal) {
                 modal.addEventListener('click', function(e) {
@@ -467,7 +574,6 @@ function showPlanModal() {
         }, 100);
     }
     
-    // Show modal
     const modal = document.getElementById('planModal');
     console.log('Modal element:', modal);
     
@@ -477,14 +583,12 @@ function showPlanModal() {
         document.body.style.overflow = 'hidden';
         console.log('Modal should be visible now');
         
-        // Focus trap and ESC key listener
         modal.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 hidePlanModal();
             }
         });
         
-        // Focus on modal for accessibility
         modal.setAttribute('tabindex', '-1');
         modal.focus();
     } else {
@@ -503,7 +607,6 @@ function hidePlanModal() {
     }
 }
 
-// Global event listener for ESC key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('planModal');
@@ -513,127 +616,9 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Payment Processing - GST हटाने के बाद amount बदला गया
-async function processPayment() {
-    const button = document.getElementById('paymentButton');
-    if (!button) return;
-    
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-    button.disabled = true;
 
-    try {
-        // Create order on backend - GST हटाने के बाद amount 99900 से 99900 ही रहेगा
-        const response = await fetch('/subscription/create-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                plan_id: 'pro',
-                amount: 99900, // ₹999 in paise (GST INCLUDED NOT REQUIRED)
-                billing_period: 'monthly'
-            })
-        });
 
-        const data = await response.json();
 
-        if (!data.success) {
-            throw new Error(data.message);
-        }
-
-        // Open Razorpay Checkout
-        const options = {
-            key: '{{ config("services.razorpay.key_id") }}',
-            amount: data.amount,
-            currency: 'INR',
-            name: '{{ config("app.name") }}',
-            description: 'Pro Plan - Monthly Subscription',
-            order_id: data.order_id,
-            handler: async function(response) {
-                await verifyPayment(response);
-            },
-            prefill: {
-                name: '{{ auth()->user()->name ?? "" }}',
-                email: '{{ auth()->user()->email ?? "" }}',
-                contact: '{{ auth()->user()->phone ?? "" }}'
-            },
-            theme: {
-                color: '#4C6FFF'
-            },
-            modal: {
-                ondismiss: function() {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }
-            }
-        };
-
-        const razorpay = new Razorpay(options);
-        razorpay.open();
-
-        hidePlanModal();
-
-    } catch (error) {
-        alert('Error: ' + error.message);
-        button.innerHTML = originalText;
-        button.disabled = false;
-    }
-}
-
-// Payment Verification
-async function verifyPayment(response) {
-    try {
-        const verifyResponse = await fetch('/subscription/verify-payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-            })
-        });
-
-        const data = await verifyResponse.json();
-
-        if (data.success) {
-            // Show success message
-            showSuccessMessage();
-        } else {
-            alert('Payment verification failed. Please contact support.');
-        }
-
-    } catch (error) {
-        alert('Error verifying payment: ' + error.message);
-    }
-}
-
-// Success Message
-function showSuccessMessage() {
-    const successHTML = `
-        <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-[10000] p-4">
-            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center animate-fadeIn">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
-                <p class="text-gray-600 mb-6">Your Pro plan has been activated successfully.</p>
-                <button onclick="window.location.reload()"
-                        class="w-full py-3 bg-[#4C6FFF] text-white font-semibold rounded-xl hover:bg-[#3A5BD9]">
-                    Continue
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', successHTML);
-}
-
-// Add CSS animations
 if (!document.getElementById('modal-styles')) {
     const style = document.createElement('style');
     style.id = 'modal-styles';
@@ -662,3 +647,4 @@ if (!document.getElementById('modal-styles')) {
     document.head.appendChild(style);
 }
 </script>
+

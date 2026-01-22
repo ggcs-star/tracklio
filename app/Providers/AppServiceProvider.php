@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
+use App\Models\Plan;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,7 +28,19 @@ class AppServiceProvider extends ServiceProvider
 
         /* ================= SVG MIME TYPE FIX ================= */
         Response::macro('svg', function ($content) {
-            return response($content, 200)->header('Content-Type', 'image/svg+xml');
+            return response($content, 200)
+                ->header('Content-Type', 'image/svg+xml');
+        });
+
+        /* ================= GLOBAL PLAN (DB → UI) ================= */
+        View::composer('*', function ($view) {
+
+            // 🔥 SINGLE SOURCE OF TRUTH = DB
+            $proPlan = Plan::where('status', 'active')
+                ->orderBy('amount') // lowest price first (safe)
+                ->first();
+
+            $view->with('proPlan', $proPlan);
         });
     }
 }
