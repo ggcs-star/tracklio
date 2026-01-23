@@ -6,7 +6,16 @@
                     ->map(fn($word) => strtoupper(substr($word, 0, 1)))
                     ->join('');
 @endphp
-
+<script>
+    window.isProUser = @json(
+        \App\Models\Subscription::where(
+            'user_id',
+            (string) auth()->user()->_id
+        )
+        ->where('status', 'active')
+        ->exists()
+    );
+</script>
 <style>
     [x-cloak] { display: none !important; }
     .notification-slide {
@@ -183,24 +192,43 @@
                 </div>
             </div>
         </div>
+@if(!$isProUser)
 <button onclick="showPlanModal()"
-        class="px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
-               text-white text-sm font-semibold rounded-lg hover:shadow-md 
-               transition-all duration-300 hidden sm:flex items-center gap-2">
-    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-    </svg>
+        class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
+               text-white text-sm font-semibold rounded-lg gap-2">
     Get Pro
 </button>
-
-<button onclick="showPlanModal()"
-        class="sm:hidden flex items-center justify-center w-10 h-10 
-               bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
-               text-white rounded-lg">
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-    </svg>
+@endif
+@if(!$isProUser)
+<button
+    onclick="showPlanModal()"
+    class="
+        sm:hidden
+        flex items-center justify-center
+        w-10 h-10
+        rounded-lg
+        bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6]
+        text-white
+        shadow-md
+        active:scale-95
+        transition
+    "
+    aria-label="Get Pro"
+>
+    Pro
 </button>
+@endif
+
+
+@if($isProUser)
+<div class="hidden sm:flex items-center gap-2
+            px-4 py-2 rounded-lg
+            bg-gradient-to-r from-[#22c55e] to-[#16a34a]
+            text-white text-sm font-semibold
+            shadow-md cursor-default">
+    Pro Active
+</div>
+@endif
         <a href="{{ route('profile') }}" class="hidden sm:flex items-center gap-3">
             <div class="text-right">
                 <p class="font-semibold text-sm">{{ $userName }}</p>
@@ -624,103 +652,10 @@ document.addEventListener('keydown', function(e) {
 });
 
 
-async function processPayment() {
-    const button = document.getElementById('paymentButton');
-    if (!button) return;
-    
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-    button.disabled = true;
-
-    try {
-       
-        const response = await fetch('/subscription/create-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                plan_id: 'pro',
-                amount: 99900, 
-                billing_period: 'monthly'
-            })
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.message);
-        }
-
-       
-        const options = {
-            key: '{{ config("services.razorpay.key_id") }}',
-            amount: data.amount,
-            currency: 'INR',
-            name: '{{ config("app.name") }}',
-            description: 'Pro Plan - Monthly Subscription',
-            order_id: data.order_id,
-            handler: async function(response) {
-                await verifyPayment(response);
-            },
-            prefill: {
-                name: '{{ auth()->user()->name ?? "" }}',
-                email: '{{ auth()->user()->email ?? "" }}',
-                contact: '{{ auth()->user()->phone ?? "" }}'
-            },
-            theme: {
-                color: '#4C6FFF'
-            },
-            modal: {
-                ondismiss: function() {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }
-            }
-        };
-
-        const razorpay = new Razorpay(options);
-        razorpay.open();
-
-        hidePlanModal();
-
-    } catch (error) {
-        alert('Error: ' + error.message);
-        button.innerHTML = originalText;
-        button.disabled = false;
-    }
-}
 
 
-async function verifyPayment(response) {
-    try {
-        const verifyResponse = await fetch('/subscription/verify-payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-            })
-        });
 
-        const data = await verifyResponse.json();
 
-        if (data.success) {
-           
-            showSuccessMessage();
-        } else {
-            alert('Payment verification failed. Please contact support.');
-        }
-
-    } catch (error) {
-        alert('Error verifying payment: ' + error.message);
-    }
-}
 
 
 function showSuccessMessage() {
@@ -743,33 +678,26 @@ function showSuccessMessage() {
     document.body.insertAdjacentHTML('beforeend', successHTML);
 }
 
-// Add CSS animations
-if (!document.getElementById('modal-styles')) {
-    const style = document.createElement('style');
-    style.id = 'modal-styles';
-    style.textContent = `
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 0.2s ease-out;
-        }
-        
-        /* Prevent body scroll when modal is open */
-        body.modal-open {
-            overflow: hidden;
-        }
-        
-        /* Modal responsive sizing */
-        @media (max-width: 640px) {
-            #planModal > div {
-                margin: 0.5rem;
-                max-width: calc(100% - 1rem);
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
+
+
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const getProDesktop = document.getElementById('getProBtnDesktop');
+    const getProMobile  = document.getElementById('getProBtnMobile');
+    const proActive     = document.getElementById('proActiveBadge');
+
+    if (window.isProUser) {
+
+        getProDesktop?.classList.add('hidden');
+        getProMobile?.classList.add('hidden');
+        proActive?.classList.remove('hidden');
+    } else {
+        
+        getProDesktop?.classList.remove('hidden');
+        getProMobile?.classList.remove('hidden');
+        proActive?.classList.add('hidden');
+    }
+});
+</script>
