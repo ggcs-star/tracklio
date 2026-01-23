@@ -3,7 +3,22 @@
 
 @section('content')
 
-{{-- ================= HEADER ================= --}}
+
+<div id="proBanner" class="mb-8 hidden">
+    <div class="rounded-2xl p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-lg font-semibold">Upgrade to Pro 🚀</h2>
+            <p class="text-sm opacity-90 mt-1">
+                Unlock analytics, campaigns, QR tools, WhatsApp automation & more.
+            </p>
+        </div>
+
+        <button onclick="showPlanModal()"
+            class="bg-white text-indigo-600 px-6 py-2.5 rounded-xl font-semibold hover:scale-105 transition">
+            Get Pro
+        </button>
+    </div>
+</div>
 <div class="mb-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
         <div>
@@ -22,7 +37,7 @@
         </div>
     </div>
 
-    {{-- Filters Card --}}
+ 
     <div class="bg-white rounded-xl border p-4 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-2">
@@ -31,7 +46,7 @@
             </div>
             
             <div class="flex flex-wrap gap-3">
-                {{-- Platform Filter --}}
+               
                 <div class="relative">
                     <select id="platformSelect" 
                             class="pl-10 pr-8 py-2.5 border border-gray-200 rounded-lg bg-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all appearance-none">
@@ -43,7 +58,7 @@
                     <i class="fas fa-globe absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                 </div>
 
-                {{-- Range Filter --}}
+               
                 <div class="relative">
                     <select id="rangeSelect" 
                             class="pl-10 pr-8 py-2.5 border border-gray-200 rounded-lg bg-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
@@ -55,7 +70,7 @@
                     <i class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                 </div>
 
-                {{-- Facebook Page Filter --}}
+                
                 <div class="relative hidden" id="pageFilterWrapper">
                     <select id="pageSelect" 
                             class="pl-10 pr-8 py-2.5 border border-gray-200 rounded-lg bg-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
@@ -74,9 +89,8 @@
     </div>
 </div>
 
-{{-- ================= STATS ================= --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    {{-- Total Reach Card --}}
+  
     <div class="bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 p-6 hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start">
             <div>
@@ -95,7 +109,7 @@
         </div>
     </div>
 
-    {{-- Total Engagement Card --}}
+    
     <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-purple-100 p-6 hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start">
             <div>
@@ -114,7 +128,7 @@
         </div>
     </div>
 
-    {{-- Link Clicks Card --}}
+   
     <div class="bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100 p-6 hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start">
             <div>
@@ -133,7 +147,7 @@
         </div>
     </div>
 
-    {{-- Follower Growth Card --}}
+    
     <div class="bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-100 p-6 hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start">
             <div>
@@ -153,9 +167,9 @@
     </div>
 </div>
 
-{{-- ================= CHARTS ================= --}}
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    {{-- Engagement Chart --}}
+    
     <div class="lg:col-span-2 bg-white rounded-2xl border p-6 hover:shadow-sm transition-shadow">
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -181,7 +195,7 @@
         </div>
     </div>
 
-    {{-- Platform Performance --}}
+   
     <div class="bg-white rounded-2xl border p-6 hover:shadow-sm transition-shadow">
         <div class="mb-6">
             <h3 class="font-bold text-lg text-gray-900">Platform Performance</h3>
@@ -205,7 +219,7 @@
     </div>
 </div>
 
-{{-- ================= RECENT ACTIVITY ================= --}}
+
 <div class="bg-white rounded-2xl border p-6">
     <div class="flex justify-between items-center mb-6">
         <div>
@@ -216,11 +230,10 @@
     </div>
     
     <div id="recentActivity" class="space-y-4">
-        <!-- Activity will be loaded here -->
+      
     </div>
 </div>
 
-{{-- ================= SCRIPTS ================= --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
@@ -229,7 +242,7 @@ let engagementChart, platformChart;
 let pagesLoaded = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Engagement Chart
+    
     engagementChart = new Chart(document.getElementById('engagementChart'), {
         type: 'line',
         data: {
@@ -280,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize Platform Chart
+    
     platformChart = new Chart(document.getElementById('platformChart'), {
         type: 'bar',
         data: {
@@ -330,10 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Load initial data
+   
     loadDashboard();
 
-    // Add event listeners to filters
+    
     document.getElementById('platformSelect').addEventListener('change', loadDashboard);
     document.getElementById('rangeSelect').addEventListener('change', loadDashboard);
     document.getElementById('pageSelect').addEventListener('change', loadDashboard);
@@ -344,12 +357,12 @@ async function loadDashboard() {
     const range = document.getElementById('rangeSelect').value;
     const page = document.getElementById('pageSelect').value || 'all';
 
-    // Show loading state
+   
     document.querySelectorAll('.text-3xl').forEach(el => {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     });
 
-    // Build URL
+   
 let url = `{{ url('dashboard/live') }}?platform=${platform}&page=${page}`;
     if (range === 'today') url += '&filter=today';
     else url += `&range=${range}`;
@@ -358,16 +371,16 @@ let url = `{{ url('dashboard/live') }}?platform=${platform}&page=${page}`;
         const response = await fetch(url);
         const data = await response.json();
 
-        // Update Stats
+       
         updateStats(data);
         
-        // Update Charts
+      
         updateCharts(data);
         
-        // Update Page Filter
+        
         updatePageFilter(data);
         
-        // Update Recent Activity
+       
         updateRecentActivity(data);
 
     } catch (error) {
@@ -377,7 +390,7 @@ let url = `{{ url('dashboard/live') }}?platform=${platform}&page=${page}`;
 }
 
 function updateStats(data) {
-    // Format numbers with commas
+    
     const formatNumber = (num) => {
         if (!num) return '0';
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -390,7 +403,7 @@ function updateStats(data) {
 }
 
 function updateCharts(data) {
-    // Engagement Chart
+   
     if (!data.labels || data.labels.length === 0) {
         document.getElementById('noEngagementData').classList.remove('hidden');
     } else {
@@ -400,7 +413,7 @@ function updateCharts(data) {
         engagementChart.update();
     }
 
-    // Platform Chart
+    
     if (data.platformReach && data.platformEngagement) {
         platformChart.data.datasets[0].data = data.platformReach;
         platformChart.data.datasets[1].data = data.platformEngagement;
@@ -445,10 +458,10 @@ function updateRecentActivity(data) {
         return;
     }
 
-    // Clear existing content
+    
     container.innerHTML = '';
 
-    // Add activity items
+    
     data.recentActivity.forEach(activity => {
         const icon = getPlatformIcon(activity.platform);
         const timeAgo = getTimeAgo(activity.timestamp);
@@ -491,17 +504,16 @@ function getPlatformColor(platform) {
 }
 
 function getTimeAgo(timestamp) {
-    // Implement your time ago logic here
+    
     return '2 hours ago';
 }
 
 function showErrorState() {
-    // Show error in stats
+    
     document.querySelectorAll('.text-3xl').forEach(el => {
         el.textContent = '--';
     });
     
-    // Show error in engagement chart
     document.getElementById('noEngagementData').classList.remove('hidden');
     document.getElementById('noEngagementData').innerHTML = `
         <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
@@ -513,6 +525,13 @@ function showErrorState() {
         </button>
     `;
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window.isProUser) {
+        document.getElementById('proBanner')?.classList.remove('hidden')
+    }
+})
 </script>
 
 @endsection

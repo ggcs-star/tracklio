@@ -9,18 +9,16 @@
   <title>@yield('title') | tracklio</title>
   <link rel="icon" type="image/png" href="{{ asset('assets/images/tracklio.png') }}">
   <link rel="apple-touch-icon" href="{{ asset('assets/images/tracklio.png') }}">
-
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- ApexCharts -->
+  
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <!-- AlpineJS -->
+ 
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
   @stack('styles')
 
   <style>
-    /* Prevent scroll when sidebar is open */
+    
     .no-scroll { 
       overflow: hidden; 
       position: fixed;
@@ -28,12 +26,12 @@
       height: 100%;
     }
 
-    /* Alpine.js cloaking */
+   
     [x-cloak] { 
       display: none !important; 
     }
 
-    /* Safe area insets for notched phones */
+    
     .safe-top {
       padding-top: env(safe-area-inset-top, 0);
     }
@@ -47,7 +45,7 @@
       padding-right: env(safe-area-inset-right, 0);
     }
 
-    /* Hide scrollbar but keep functionality */
+ 
     .hide-scrollbar {
       -ms-overflow-style: none;
       scrollbar-width: none;
@@ -56,31 +54,31 @@
       display: none;
     }
 
-    /* Touch-friendly tap targets */
+    
     .touch-target {
       min-height: 44px;
       min-width: 44px;
     }
 
-    /* Smooth transitions */
+   
     * {
       transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       transition-duration: 150ms;
     }
 
-    /* Better focus styles for accessibility */
+    
     :focus-visible {
       outline: 2px solid #4f46e5;
       outline-offset: 2px;
     }
 
-    /* Prevent text size adjustment on orientation change */
+    
     html {
       -webkit-text-size-adjust: 100%;
     }
 
-    /* Optimize for mobile performance */
+   
     @media (prefers-reduced-motion: reduce) {
       * {
         animation-duration: 0.01ms !important;
@@ -89,7 +87,7 @@
       }
     }
 
-    /* Print styles */
+    
     @media print {
       .no-print {
         display: none !important;
@@ -99,17 +97,20 @@
       }
     }
   </style>
+  <script>
+  window.isProUser = @json($isProUser ?? false);
+</script>
 </head>
 
 <body class="bg-[#F5F7FB] text-gray-900 antialiased">
-<!-- Mobile sidebar overlay -->
+
 <div id="sidebarOverlay"
      class="hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity duration-300"
      onclick="closeSidebar()"></div>
 
 <div class="flex flex-col md:flex-row h-screen w-full overflow-hidden relative">
   
-  <!-- Sidebar - Mobile & Desktop -->
+  
   <aside id="sidebar"
      class="fixed top-0 left-0 h-screen w-[280px] md:w-64 bg-[#0D1321] text-white shadow-xl z-50
             overflow-y-auto hide-scrollbar
@@ -121,12 +122,12 @@
     @include('layouts.sidebar')
   </aside>
 
-  <!-- Main Content Area -->
+  
   <main class="flex-1 flex flex-col md:ml-64 w-full overflow-hidden">
     
-    <!-- Header - Sticky -->
+    
     <header class="h-[60px] sm:h-[72px] bg-white border-b flex items-center px-4 sm:px-6 md:px-8 lg:px-10 sticky top-0 z-30 safe-top">
-      <!-- Mobile menu button -->
+    
       <button onclick="openSidebar()"
               class="md:hidden mr-4 p-2 rounded-lg hover:bg-gray-100 touch-target">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,11 +140,11 @@
       </div>
     </header>
 
-    <!-- Main Content Container -->
+   
     <div class="flex-1 overflow-y-auto hide-scrollbar p-4 sm:p-6 md:p-8 lg:p-10 safe-bottom">
       <div class="w-full max-w-[1920px] mx-auto">
         
-        <!-- Flash messages -->
+       
         @if(session('success'))
           <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg sm:rounded-xl text-sm sm:text-base animate-fade-in">
             <div class="flex items-center gap-2">
@@ -188,13 +189,13 @@
           </div>
         @endif
 
-        <!-- Main Content -->
+        
         @yield('content')
 
       </div>
     </div>
 
-    <!-- Mobile bottom navigation (optional) -->
+ 
     <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-40 safe-bottom">
       <div class="flex items-center justify-around p-2">
         <button onclick="openSidebar()"
@@ -231,7 +232,7 @@
   </main>
 </div>
 
-<!-- Back to top button -->
+
 <button id="backToTop"
         class="fixed bottom-20 md:bottom-8 right-4 md:right-8 p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 active:scale-95 transition-all duration-300 opacity-0 pointer-events-none touch-target z-40">
   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -239,29 +240,29 @@
   </svg>
 </button>
 
-<!-- Loading overlay -->
+
 
 
 @stack('scripts')
-<!-- Lucide Icons -->
+
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
-  // Initialize Lucide icons
+
   document.addEventListener('DOMContentLoaded', function () {
     if (window.lucide) {
       lucide.createIcons();
     }
     
-    // Initialize animations
+   
     initAnimations();
-    // Initialize back to top button
+  
     initBackToTop();
-    // Initialize loading state
+   
     
   });
 
-  // Sidebar functions
+  
   function openSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -272,7 +273,7 @@
     setTimeout(() => overlay.classList.add('opacity-100'), 10);
     html.classList.add('no-scroll');
     
-    // Prevent body scrolling
+    
     document.body.style.overflow = 'hidden';
   }
 
@@ -285,17 +286,16 @@
     overlay.classList.remove('opacity-100');
     setTimeout(() => overlay.classList.add('hidden'), 300);
     html.classList.remove('no-scroll');
-    
-    // Restore body scrolling
+
     document.body.style.overflow = '';
   }
 
-  // Close sidebar with Escape key
+  
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeSidebar();
   });
 
-  // Close sidebar when clicking on a link (mobile)
+ 
   document.addEventListener('click', e => {
     if (window.innerWidth < 768) {
       if (e.target.closest('a') && !e.target.closest('#sidebar')) {
@@ -304,7 +304,7 @@
     }
   });
 
-  // Back to top functionality
+
   function initBackToTop() {
     const backToTopButton = document.getElementById('backToTop');
     const mainContent = document.querySelector('main > div');
@@ -332,24 +332,22 @@
   }
 
 
-  // Animation initialization
+  
   function initAnimations() {
-    // Add fade-in animation to elements with data-animate attribute
     const animatedElements = document.querySelectorAll('[data-animate]');
     animatedElements.forEach(el => {
       el.classList.add('animate-fade-in');
     });
   }
 
-  // Handle orientation change
+ 
   window.addEventListener('orientationchange', () => {
-    // Fix any layout issues on orientation change
+   
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
   });
 
-  // Touch device detection
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (isTouchDevice) {
     document.documentElement.classList.add('touch-device');
@@ -357,7 +355,6 @@
     document.documentElement.classList.add('no-touch-device');
   }
 
-  // PWA support check
   if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/service-worker.js').catch(err => {
@@ -366,7 +363,7 @@
     });
   }
 
-  // Connection status detection
+  
   window.addEventListener('online', () => {
     showToast('Back online', 'success');
   });
@@ -375,7 +372,7 @@
     showToast('You are offline', 'error');
   });
 
-  // Toast notification function
+ 
   function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `fixed top-4 right-4 md:top-6 md:right-6 z-50 px-4 py-3 rounded-xl shadow-2xl text-white font-medium transform transition-all duration-300 translate-x-full ${
@@ -398,21 +395,21 @@
     
     document.body.appendChild(toast);
     
-    // Animate in
+    
     requestAnimationFrame(() => {
       toast.style.transform = 'translateX(0)';
     });
     
-    // Remove after 3 seconds
+   
     setTimeout(() => {
       toast.style.transform = 'translateX(100%)';
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
 
-  // Keyboard shortcuts
+ 
   document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + K for search
+   
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
       const searchInput = document.querySelector('input[type="search"], input[placeholder*="search"], input[placeholder*="Search"]');
@@ -421,29 +418,28 @@
       }
     }
     
-    // Ctrl/Cmd + / for help
+    
     if ((e.ctrlKey || e.metaKey) && e.key === '/') {
       e.preventDefault();
-      // Add your help modal trigger here
     }
   });
 
-  // Form validation enhancements
+ 
   document.addEventListener('invalid', (e) => {
-    // Add visual feedback for invalid form fields
+   
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
       e.target.classList.add('border-red-500');
     }
   }, true);
 
   document.addEventListener('input', (e) => {
-    // Remove error state when user starts typing
+    
     if (e.target.classList.contains('border-red-500')) {
       e.target.classList.remove('border-red-500');
     }
   });
 
-  // Lazy loading for images
+  
   if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -461,17 +457,17 @@
     });
   }
 
-  // Device pixel ratio detection
+ 
   const dpr = window.devicePixelRatio || 1;
   document.documentElement.setAttribute('data-dpr', dpr);
 
-  // Reduced motion preference
+ 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (prefersReducedMotion.matches) {
     document.documentElement.classList.add('reduce-motion');
   }
 
-  // Dark mode detection (if you want to add dark mode later)
+  
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
   if (prefersDarkMode.matches) {
     document.documentElement.classList.add('dark-mode-preference');
@@ -479,7 +475,7 @@
 </script>
 
 <style>
-  /* Animation keyframes */
+ 
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -513,7 +509,7 @@
     }
   }
 
-  /* Responsive typography */
+  
   @media (max-width: 640px) {
     html {
       font-size: 14px;
@@ -532,24 +528,24 @@
     }
   }
 
-  /* Better scrolling on iOS */
+ 
   .overflow-y-auto {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Prevent long words from breaking layout */
+
   .break-words {
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
 
-  /* Responsive table container */
+ 
   .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Print optimizations */
+  
   @media print {
     body {
       background: white !important;
@@ -566,14 +562,14 @@
     }
   }
 
-  /* High contrast mode support */
+ 
   @media (prefers-contrast: high) {
     .high-contrast {
       border: 2px solid currentColor;
     }
   }
 
-  /* Mobile hover state removal */
+  
   @media (hover: none) {
     .hover-effect {
       opacity: 1 !important;

@@ -113,6 +113,7 @@
                             <div x-show="!note.is_read" 
                                  class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#4C6FFF] to-[#6A5FFF]"></div>
 
+                            <!-- ICON CONTAINER -->
                             <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm"
                                  :class="!note.is_read ? 
                                          'bg-gradient-to-br from-[#4C6FFF]/10 to-[#6A5FFF]/10 ring-1 ring-[#4C6FFF]/20' : 
@@ -465,7 +466,7 @@ if (msg) msg.classList.add('hidden');
         const modalHTML = `
             <div id="planModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-xl max-w-sm w-full shadow-2xl animate-fadeIn border border-gray-200 mx-4">
-                    {{-- MODAL HEADER --}}
+                    
                     <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl border-b">
                         <div class="flex justify-between items-center">
                             <div>
@@ -478,9 +479,9 @@ if (msg) msg.classList.add('hidden');
                         </div>
                     </div>
 
-                    {{-- MODAL CONTENT --}}
+                    
                     <div class="p-5">
-                        {{-- PLAN PRICE --}}
+                       
                         <div class="text-center mb-5">
                             <div class="flex items-baseline justify-center gap-1 mb-2">
                                 <span class="text-3xl font-bold text-gray-900">₹999</span>
@@ -489,7 +490,7 @@ if (msg) msg.classList.add('hidden');
                             <p class="text-sm text-gray-600 mb-4">Everything you need to grow your social media presence</p>
                         </div>
 
-                        {{-- FEATURES WITH ICONS --}}
+                       
                         <div class="space-y-3 mb-6">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
@@ -517,7 +518,7 @@ if (msg) msg.classList.add('hidden');
                             </div>
                         </div>
 
-                        {{-- SIMPLE PAYMENT SUMMARY --}}
+                        
                         <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
                             <div class="text-center">
                                 <div class="mb-2">
@@ -531,7 +532,7 @@ if (msg) msg.classList.add('hidden');
                             </div>
                         </div>
 
-                        {{-- PAYMENT BUTTON --}}
+                        
                         <button onclick="processPayment()"
                                 id="paymentButton"
                                 class="w-full py-3.5 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
@@ -545,7 +546,7 @@ if (msg) msg.classList.add('hidden');
     Your Pro subscription is now active.
 </div>
 
-                        {{-- SECURITY NOTE --}}
+                       
                         <p class="text-center text-xs text-gray-500">
                             <i class="fas fa-shield-alt mr-1 text-xs"></i> Secure SSL encrypted payment
                         </p>
@@ -556,12 +557,14 @@ if (msg) msg.classList.add('hidden');
         
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
+      
         setTimeout(() => {
             const closeBtn = document.getElementById('closeModalBtn');
             if (closeBtn) {
                 closeBtn.addEventListener('click', hidePlanModal);
                 console.log('Close button event listener added');
             }
+            
             
             const modal = document.getElementById('planModal');
             if (modal) {
@@ -574,6 +577,7 @@ if (msg) msg.classList.add('hidden');
         }, 100);
     }
     
+   
     const modal = document.getElementById('planModal');
     console.log('Modal element:', modal);
     
@@ -583,12 +587,14 @@ if (msg) msg.classList.add('hidden');
         document.body.style.overflow = 'hidden';
         console.log('Modal should be visible now');
         
+        
         modal.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 hidePlanModal();
             }
         });
         
+       
         modal.setAttribute('tabindex', '-1');
         modal.focus();
     } else {
@@ -607,6 +613,7 @@ function hidePlanModal() {
     }
 }
 
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('planModal');
@@ -617,8 +624,126 @@ document.addEventListener('keydown', function(e) {
 });
 
 
+async function processPayment() {
+    const button = document.getElementById('paymentButton');
+    if (!button) return;
+    
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    button.disabled = true;
+
+    try {
+       
+        const response = await fetch('/subscription/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                plan_id: 'pro',
+                amount: 99900, 
+                billing_period: 'monthly'
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+       
+        const options = {
+            key: '{{ config("services.razorpay.key_id") }}',
+            amount: data.amount,
+            currency: 'INR',
+            name: '{{ config("app.name") }}',
+            description: 'Pro Plan - Monthly Subscription',
+            order_id: data.order_id,
+            handler: async function(response) {
+                await verifyPayment(response);
+            },
+            prefill: {
+                name: '{{ auth()->user()->name ?? "" }}',
+                email: '{{ auth()->user()->email ?? "" }}',
+                contact: '{{ auth()->user()->phone ?? "" }}'
+            },
+            theme: {
+                color: '#4C6FFF'
+            },
+            modal: {
+                ondismiss: function() {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            }
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+
+        hidePlanModal();
+
+    } catch (error) {
+        alert('Error: ' + error.message);
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+}
 
 
+async function verifyPayment(response) {
+    try {
+        const verifyResponse = await fetch('/subscription/verify-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            })
+        });
+
+        const data = await verifyResponse.json();
+
+        if (data.success) {
+           
+            showSuccessMessage();
+        } else {
+            alert('Payment verification failed. Please contact support.');
+        }
+
+    } catch (error) {
+        alert('Error verifying payment: ' + error.message);
+    }
+}
+
+
+function showSuccessMessage() {
+    const successHTML = `
+        <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-[10000] p-4">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-8 text-center animate-fadeIn">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
+                <p class="text-gray-600 mb-6">Your Pro plan has been activated successfully.</p>
+                <button onclick="window.location.reload()"
+                        class="w-full py-3 bg-[#4C6FFF] text-white font-semibold rounded-xl hover:bg-[#3A5BD9]">
+                    Continue
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', successHTML);
+}
+
+// Add CSS animations
 if (!document.getElementById('modal-styles')) {
     const style = document.createElement('style');
     style.id = 'modal-styles';
