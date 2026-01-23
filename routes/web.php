@@ -22,10 +22,58 @@ use App\Http\Controllers\{
     MongoPasswordResetController,
     ProfileController,
     NotificationController,
-    BroadcastGroupController
+    BroadcastGroupController,
+    SubscriptionController,
+    PlanController
 };
 
 use App\Models\QrLink;
+
+
+    // Create Razorpay plan + DB save
+    Route::post('/plans', [PlanController::class, 'create']);
+
+    // Get all active plans (for UI)
+    Route::get('/plans', [PlanController::class, 'index']);
+
+    // Deactivate a plan
+    Route::patch('/plans/{id}/deactivate', [PlanController::class, 'deactivate']);
+
+
+/*
+|--------------------------------------------------------------------------
+| QR IMAGE (SVG SERVE) – IMPORTANT
+|--------------------------------------------------------------------------
+*/Route::get('/razorpay/success', function (Request $request) {
+
+    if (auth()->check()) {
+        app(SubscriptionController::class)->syncStatus();
+    }
+
+    return redirect()->route('dashboard')
+        ->with('success', 'Subscription activated successfully 🎉');
+
+})->name('razorpay.success');
+
+
+
+
+Route::middleware('auth')->group(function () {
+
+    Route::post('/subscription/create',
+        [SubscriptionController::class, 'create']);
+
+    Route::post('/subscription/verify',
+        [SubscriptionController::class, 'verify']);
+
+    Route::post('/subscription/cancel',
+        [SubscriptionController::class, 'cancel']);
+        Route::get('/subscription/sync', [SubscriptionController::class, 'syncStatus'])
+    ->middleware('auth');
+
+});
+
+
 Route::get('/qr-image/{code}', function ($code) {
 
     $qr = QrLink::where('short_code', $code)->firstOrFail();
