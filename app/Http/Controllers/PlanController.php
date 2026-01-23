@@ -6,23 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Razorpay\Api\Api;
 use App\Models\Plan;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
+
 
 class PlanController extends Controller
 {
-    /**
-     * Create Razorpay Plan + Save to DB
-     * WITHOUT WEBHOOK
-     */
+   
     public function create(Request $request)
     {
-        // ✅ Validate request
+        
         $request->validate([
             'name'     => 'required|string|max:255',
             'amount'   => 'required|numeric|min:1',
             'interval' => 'required|in:month,year',
         ]);
 
-        // ✅ Prevent duplicate plans (important)
+        
         $existingPlan = Plan::where('name', $request->name)
             ->where('interval', $request->interval)
             ->where('status', 'active')
@@ -40,13 +40,13 @@ class PlanController extends Controller
 
         try {
 
-            // ✅ Razorpay init
+            
             $api = new Api(
                 config('services.razorpay.key'),
                 config('services.razorpay.secret')
             );
 
-            // ✅ Create Razorpay Plan
+           
             $razorpayPlan = $api->plan->create([
                 'period'   => $request->interval,
                 'interval' => 1,
@@ -57,7 +57,6 @@ class PlanController extends Controller
                 ],
             ]);
 
-            // ✅ Save Plan in DB (single source of truth)
             $plan = Plan::create([
                 'plan_key'          => strtolower(
                     str_replace(' ', '_', $request->name . '_' . $request->interval)
@@ -71,13 +70,21 @@ class PlanController extends Controller
                 'status'            => 'active',
             ]);
 
-            DB::commit();
+        DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Plan created successfully',
-                'plan'    => $plan
-            ], 201);
+        Notification::create([
+            'user_id' => Auth::id(),
+            'type'    => 'success',
+            'message' => 'New plan "' . $plan->name . '" created successfully.',
+            'is_read' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plan created successfully',
+            'plan'    => $plan
+        ], 201);
+
 
         } catch (\Exception $e) {
 
@@ -91,9 +98,7 @@ class PlanController extends Controller
         }
     }
 
-    /**
-     * Get all active plans (for UI)
-     */
+    
     public function index()
     {
         $plans = Plan::where('status', 'active')
@@ -106,20 +111,26 @@ class PlanController extends Controller
         ]);
     }
 
-    /**
-     * Disable a plan (soft delete)
-     */
+   
     public function deactivate($id)
     {
         $plan = Plan::findOrFail($id);
 
-        $plan->update([
-            'status' => 'inactive'
-        ]);
+       $plan->update([
+    'status' => 'inactive'
+]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Plan deactivated successfully'
-        ]);
+Notification::create([
+    'user_id' => Auth::id(),
+    'type'    => 'warning',
+    'message' => '⚠️ Plan "' . $plan->name . '" has been deactivated.',
+    'is_read' => false,
+]);
+
+return response()->json([
+    'success' => true,
+    'message' => 'Plan deactivated successfully'
+]);
+
     }
 }
