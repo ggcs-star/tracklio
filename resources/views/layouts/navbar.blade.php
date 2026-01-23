@@ -16,13 +16,13 @@
 
 <div class="w-full flex items-center justify-between gap-4">
 
-    <!-- LEFT -->
+    
     <h2 class="text-xl font-bold hidden md:block">Dashboard</h2>
 
-    <!-- RIGHT -->
+    
     <div class="flex items-center gap-5 ml-auto">
 
-        <!-- SEARCH -->
+        
         <div class="hidden md:flex items-center bg-[#F1F3F9] px-4 py-2 rounded-full border w-[320px]">
             <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
@@ -30,15 +30,15 @@
             <input type="text" placeholder="Search posts..." class="bg-transparent outline-none text-sm w-full"/>
         </div>
 
-        <!-- 🔔 NOTIFICATIONS - RESPONSIVE UI -->
+       
         <div x-data="notificationDrawer()" x-init="init()" x-cloak class="relative">
 
-            <!-- BELL ICON -->
+            
             <button @click="toggle()"
                     class="relative focus:outline-none group p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-[#F5F7FF] hover:to-[#EFF1FF] transition-all duration-300">
                 
                 <div class="relative">
-                    <!-- UNREAD BADGE -->
+                    
                     <span x-show="unreadCount > 0"
                           x-text="unreadCount"
                           class="absolute -top-2 -right-2 bg-gradient-to-br from-red-500 to-pink-500 text-white
@@ -46,7 +46,6 @@
                                  flex items-center justify-center rounded-full
                                  ring-2 ring-white shadow-lg animate-pulse"></span>
 
-                    <!-- BELL SVG -->
                     <svg class="w-6 h-6 text-gray-700 group-hover:text-[#4C6FFF] transition-all duration-300 
                                 transform group-hover:rotate-12 group-hover:scale-110" 
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,13 +57,13 @@
                 </div>
             </button>
 
-            <!-- OVERLAY -->
+            
             <div x-show="open"
                  x-transition.opacity.duration.200ms
                  @click="close"
                  class="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40"></div>
 
-            <!-- NOTIFICATION DRAWER - RESPONSIVE -->
+            
             <div x-show="open"
                  x-transition:enter="notification-slide"
                  x-transition:enter-start="translate-x-full opacity-0"
@@ -75,7 +74,7 @@
                  class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-gradient-to-b from-white to-gray-50
                         z-50 shadow-[0_0_50px_-12px_rgba(0,0,0,0.25)] flex flex-col border-l border-gray-200/60">
 
-                <!-- DRAWER HEADER -->
+                
                 <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200/70 bg-white/95">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#4C6FFF] to-[#6A5FFF] 
@@ -114,18 +113,18 @@
                     </div>
                 </div>
 
-                <!-- NOTIFICATIONS LIST -->
+               
                 <div class="flex-1 overflow-y-auto">
                     <template x-for="note in notifications" :key="note.id">
                         <div class="relative flex items-start gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100/80 hover:bg-gray-50/80 
                                     transition-all duration-200 group"
                              :class="!note.is_read ? 'bg-gradient-to-r from-blue-50/60 to-white' : ''">
                             
-                            <!-- STATUS INDICATOR -->
+                            
                             <div x-show="!note.is_read" 
                                  class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#4C6FFF] to-[#6A5FFF]"></div>
 
-                            <!-- ICON CONTAINER -->
+                            
                             <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm"
                                  :class="!note.is_read ? 
                                          'bg-gradient-to-br from-[#4C6FFF]/10 to-[#6A5FFF]/10 ring-1 ring-[#4C6FFF]/20' : 
@@ -135,13 +134,13 @@
                                       :class="!note.is_read ? 'opacity-100' : 'opacity-80'"></span>
                             </div>
 
-                            <!-- CONTENT -->
+                            
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm text-gray-800 leading-relaxed" 
                                    x-text="note.message"></p>
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 mt-2">
-                                    <!-- TYPE BADGE -->
+                                    
                                     <span class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs font-medium 
                                                   capitalize tracking-wide self-start"
                                           :class="!note.is_read ? 
@@ -150,13 +149,13 @@
                                         <span x-text="note.type.replace('_', ' ')"></span>
                                     </span>
                                     
-                                    <!-- TIME -->
+                                    
                                     <p class="text-xs text-gray-500 font-medium"
                                        x-text="timeAgo(note.created_at)"></p>
                                 </div>
                             </div>
 
-                            <!-- ACTION BUTTON -->
+                           
                             <button @click="toggleRead(note)"
                                     class="flex-shrink-0 text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium transition-all duration-200
                                            transform hover:scale-105 active:scale-95 mt-2 sm:mt-0"
@@ -168,7 +167,7 @@
                         </div>
                     </template>
 
-                    <!-- EMPTY STATE -->
+                    
                     <div x-show="!notifications.length"
                          class="h-full flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center">
                         <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 
@@ -182,7 +181,7 @@
                     </div>
                 </div>
 
-                <!-- VIEW ALL FOOTER -->
+                
                 <div class="border-t border-gray-200/70 px-4 sm:px-6 py-3 sm:py-4 bg-white/95"
                      x-show="!showAll && notifications.length === 10">
                     <button @click="fetchAll()"
@@ -201,7 +200,7 @@
                 </div>
             </div>
         </div>
-<!-- PRO GET PLAN BUTTON - ADD THIS AFTER NOTIFICATION BUT BEFORE PROFILE -->
+
 <button onclick="showPlanModal()"
         class="px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
                text-white text-sm font-semibold rounded-lg hover:shadow-md 
@@ -212,7 +211,7 @@
     Get Pro
 </button>
 
-<!-- MOBILE GET PLAN BUTTON -->
+
 <button onclick="showPlanModal()"
         class="sm:hidden flex items-center justify-center w-10 h-10 
                bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
@@ -221,7 +220,7 @@
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
     </svg>
 </button>
-        <!-- PROFILE -->
+       
         <a href="{{ route('profile') }}" class="hidden sm:flex items-center gap-3">
             <div class="text-right">
                 <p class="font-semibold text-sm">{{ $userName }}</p>
@@ -355,13 +354,12 @@ function notificationDrawer() {
 function showPlanModal() {
     console.log('showPlanModal called');
     
-    // Create modal HTML if not exists
     if (!document.getElementById('planModal')) {
         console.log('Creating modal HTML');
         const modalHTML = `
             <div id="planModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-xl max-w-sm w-full shadow-2xl animate-fadeIn border border-gray-200 mx-4">
-                    {{-- MODAL HEADER --}}
+                    
                     <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl border-b">
                         <div class="flex justify-between items-center">
                             <div>
@@ -374,9 +372,9 @@ function showPlanModal() {
                         </div>
                     </div>
 
-                    {{-- MODAL CONTENT --}}
+                    
                     <div class="p-5">
-                        {{-- PLAN PRICE --}}
+                       
                         <div class="text-center mb-5">
                             <div class="flex items-baseline justify-center gap-1 mb-2">
                                 <span class="text-3xl font-bold text-gray-900">₹999</span>
@@ -385,7 +383,7 @@ function showPlanModal() {
                             <p class="text-sm text-gray-600 mb-4">Everything you need to grow your social media presence</p>
                         </div>
 
-                        {{-- FEATURES WITH ICONS --}}
+                       
                         <div class="space-y-3 mb-6">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle text-indigo-500 text-sm mr-3"></i>
@@ -413,7 +411,7 @@ function showPlanModal() {
                             </div>
                         </div>
 
-                        {{-- SIMPLE PAYMENT SUMMARY --}}
+                        
                         <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
                             <div class="text-center">
                                 <div class="mb-2">
@@ -427,7 +425,7 @@ function showPlanModal() {
                             </div>
                         </div>
 
-                        {{-- PAYMENT BUTTON --}}
+                        
                         <button onclick="processPayment()"
                                 id="paymentButton"
                                 class="w-full py-3.5 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
@@ -436,7 +434,7 @@ function showPlanModal() {
                             <i class="fas fa-lock mr-2 text-xs"></i>Subscribe at ₹999/month
                         </button>
 
-                        {{-- SECURITY NOTE --}}
+                       
                         <p class="text-center text-xs text-gray-500">
                             <i class="fas fa-shield-alt mr-1 text-xs"></i> Secure SSL encrypted payment
                         </p>
@@ -447,7 +445,7 @@ function showPlanModal() {
         
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
-        // Add event listener for close button
+      
         setTimeout(() => {
             const closeBtn = document.getElementById('closeModalBtn');
             if (closeBtn) {
@@ -455,7 +453,7 @@ function showPlanModal() {
                 console.log('Close button event listener added');
             }
             
-            // Add event listener for outside click
+            
             const modal = document.getElementById('planModal');
             if (modal) {
                 modal.addEventListener('click', function(e) {
@@ -467,7 +465,7 @@ function showPlanModal() {
         }, 100);
     }
     
-    // Show modal
+   
     const modal = document.getElementById('planModal');
     console.log('Modal element:', modal);
     
@@ -477,14 +475,14 @@ function showPlanModal() {
         document.body.style.overflow = 'hidden';
         console.log('Modal should be visible now');
         
-        // Focus trap and ESC key listener
+        
         modal.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 hidePlanModal();
             }
         });
         
-        // Focus on modal for accessibility
+       
         modal.setAttribute('tabindex', '-1');
         modal.focus();
     } else {
@@ -503,7 +501,7 @@ function hidePlanModal() {
     }
 }
 
-// Global event listener for ESC key
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('planModal');
@@ -513,7 +511,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Payment Processing - GST हटाने के बाद amount बदला गया
+
 async function processPayment() {
     const button = document.getElementById('paymentButton');
     if (!button) return;
@@ -523,7 +521,7 @@ async function processPayment() {
     button.disabled = true;
 
     try {
-        // Create order on backend - GST हटाने के बाद amount 99900 से 99900 ही रहेगा
+       
         const response = await fetch('/subscription/create-order', {
             method: 'POST',
             headers: {
@@ -532,7 +530,7 @@ async function processPayment() {
             },
             body: JSON.stringify({
                 plan_id: 'pro',
-                amount: 99900, // ₹999 in paise (GST INCLUDED NOT REQUIRED)
+                amount: 99900, 
                 billing_period: 'monthly'
             })
         });
@@ -543,7 +541,7 @@ async function processPayment() {
             throw new Error(data.message);
         }
 
-        // Open Razorpay Checkout
+       
         const options = {
             key: '{{ config("services.razorpay.key_id") }}',
             amount: data.amount,
@@ -582,7 +580,7 @@ async function processPayment() {
     }
 }
 
-// Payment Verification
+
 async function verifyPayment(response) {
     try {
         const verifyResponse = await fetch('/subscription/verify-payment', {
@@ -601,7 +599,7 @@ async function verifyPayment(response) {
         const data = await verifyResponse.json();
 
         if (data.success) {
-            // Show success message
+           
             showSuccessMessage();
         } else {
             alert('Payment verification failed. Please contact support.');
@@ -612,7 +610,7 @@ async function verifyPayment(response) {
     }
 }
 
-// Success Message
+
 function showSuccessMessage() {
     const successHTML = `
         <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-[10000] p-4">

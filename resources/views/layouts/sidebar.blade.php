@@ -4,13 +4,11 @@
 
 <div class="flex flex-col h-full">
 
-  <!-- HEADER -->
+  
   <div class="pb-4">
   <div class="flex items-center justify-between px-4 py-4 md:py-5">
       <div class="flex items-center gap-3">
-        <!-- <div class="w-10 h-10 bg-gradient-to-br from-[#4C6FFF] to-[#8B5CF6] rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-lg">
-          
-        </div> -->
+        
         <div class="flex items-center gap-2">
                  <img
     src="{{ asset('assets/images/tracklio.png') }}"
@@ -26,7 +24,7 @@
        
       </div>
 
-      <!-- Close button -->
+      
       <button onclick="closeSidebar()"
               class="md:hidden p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
               aria-label="Close sidebar">
@@ -36,7 +34,7 @@
       </button>
     </div>
 
-    <!-- Navigation -->
+   
 <nav class="px-2 mt-2 space-y-1 flex-1 overflow-y-auto">
       <div class="px-3 pb-2">
         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Menu</p>
@@ -49,6 +47,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
         <span class="font-medium">Dashboard</span>
+        
       </a>
 
       <a href="{{ route('posts.create') }}"
@@ -112,7 +111,7 @@
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
-    <!-- ICON -->
+    
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 7h4v4H3V7zm14 0h4v4h-4V7zM3 17h4v4H3v-4zm10-6h4v4h-4v-4z"/>
@@ -161,7 +160,7 @@
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
-    <!-- Broadcast Icon -->
+    
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 12a8 8 0 0116 0M6 12a6 6 0 0112 0M8 12a4 4 0 018 0M12 16v4"/>
@@ -190,7 +189,7 @@
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
-    <!-- ICON -->
+   
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 10h.01M12 10h.01M16 10h.01M21 16V8
@@ -207,7 +206,7 @@
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
-    <!-- ICON -->
+    
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -219,8 +218,6 @@
     </nav>
   </div>
  
-
-  <!-- SIGN OUT -->
   <div class="border-t border-gray-800 pt-4 px-4 pb-6">
     <form action="{{ route('logout') }}" method="POST">
       @csrf
