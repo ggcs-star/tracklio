@@ -13,6 +13,7 @@
         "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.8",
         "mongodb/laravel-mongodb": "^5.5",
+        "razorpay/razorpay": "^2.9",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "stevebauman/location": "^7.6"
     },
