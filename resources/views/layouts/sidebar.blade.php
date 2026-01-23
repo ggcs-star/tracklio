@@ -1,5 +1,9 @@
 <script>
-    window.isProUser = false
+    window.isProUser = @json(
+        \App\Models\Subscription::where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->exists()
+    );
 </script>
 
 <div class="flex flex-col h-full">
