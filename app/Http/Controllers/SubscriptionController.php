@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
-
-
+use App\Models\Notification;
 
 class SubscriptionController extends Controller
 {
@@ -23,7 +22,7 @@ class SubscriptionController extends Controller
 
         $user = Auth::user();
 
-        // 🔹 Already active?
+
         $exists = Subscription::where('user_id', (string) $user->_id)
             ->where('status', 'active')
             ->first();
@@ -34,7 +33,6 @@ class SubscriptionController extends Controller
             ], 409);
         }
 
-        // 🔹 Fetch plan from DB (SINGLE SOURCE OF TRUTH)
         $plan = Plan::where('_id', $request->plan_id)
             ->where('status', 'active')
             ->first();
@@ -52,12 +50,11 @@ class SubscriptionController extends Controller
     'plan_id' => $plan->razorpay_plan_id,
     'customer_notify' => 1,
 
-    // 🔥 REQUIRED BY RAZORPAY
-    'total_count' => 120, // 120 months = 10 years
+    'total_count' => 120, 
 ]);
 
 
-        // 🔹 Save subscription in DB
+        
         Subscription::create([
             'user_id' => (string) $user->_id,
 
@@ -95,29 +92,38 @@ public function verify(Request $request)
 
     try {
 
-        // 1️⃣ Signature verify
+        
         $api->utility->verifyPaymentSignature([
             'razorpay_payment_id' => $request->razorpay_payment_id,
             'razorpay_subscription_id' => $request->razorpay_subscription_id,
             'razorpay_signature' => $request->razorpay_signature,
         ]);
 
-        // 2️⃣ Fetch payment
+        
         $payment = $api->payment->fetch($request->razorpay_payment_id);
 
-        // 3️⃣ Fetch subscription
+    
         $subscription = Subscription::where(
             'razorpay_subscription_id',
             $request->razorpay_subscription_id
         )->firstOrFail();
 
-        // 4️⃣ Activate subscription
+    
         $subscription->update([
             'razorpay_payment_id' => $payment->id,
             'status' => 'active',
         ]);
+       
 
-        // 5️⃣ Save transaction
+Notification::create([
+    'user_id' => $subscription->user_id,
+    'type'    => 'success',
+    'message' => '🎉 Your Pro subscription has been activated successfully!',
+    'is_read' => false,
+]);
+
+
+    
         Transaction::create([
             'user_id' => $subscription->user_id,
             'subscription_id' => (string) $subscription->_id,
@@ -145,7 +151,7 @@ public function verify(Request $request)
             'paid_at' => Carbon::createFromTimestamp($payment->created_at),
         ]);
 
-        // ✅ 🔥 THIS WAS MISSING
+        
         return response()->json([
             'status' => 'success'
         ]);
@@ -193,7 +199,7 @@ public function verify(Request $request)
         ]);
     }
 
-    // 🔹 Manual sync (WITHOUT WEBHOOK safety)
+    
     public function syncStatus()
     {
         $user = Auth::user();
