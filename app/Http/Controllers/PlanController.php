@@ -4,25 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Razorpay\Api\Api;
 use App\Models\Plan;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
-
 class PlanController extends Controller
 {
-   
+    /**
+     * Create new subscription plan (DB only)
+     */
     public function create(Request $request)
     {
-        
         $request->validate([
             'name'     => 'required|string|max:255',
             'amount'   => 'required|numeric|min:1',
             'interval' => 'required|in:month,year',
         ]);
 
-        
         $existingPlan = Plan::where('name', $request->name)
             ->where('interval', $request->interval)
             ->where('status', 'active')
@@ -39,55 +37,32 @@ class PlanController extends Controller
         DB::beginTransaction();
 
         try {
-
-            
-            $api = new Api(
-                config('services.razorpay.key'),
-                config('services.razorpay.secret')
-            );
-
-           
-            $razorpayPlan = $api->plan->create([
-                'period'   => $request->interval,
-                'interval' => 1,
-                'item' => [
-                    'name'     => $request->name,
-                    'amount'   => (int) ($request->amount * 100), // paise
-                    'currency' => config('services.razorpay.currency', 'INR'),
-                ],
-            ]);
-
             $plan = Plan::create([
-                'plan_key'          => strtolower(
-                    str_replace(' ', '_', $request->name . '_' . $request->interval)
-                ),
-                'razorpay_plan_id'  => $razorpayPlan->id,
-                'name'              => $request->name,
-                'amount'            => $request->amount,
-                'currency'          => config('services.razorpay.currency', 'INR'),
-                'interval'          => $request->interval,
-                'interval_count'    => 1,
-                'status'            => 'active',
+                'plan_key'       => strtolower(str_replace(' ', '_', $request->name . '_' . $request->interval)),
+                'name'           => $request->name,
+                'amount'         => $request->amount,
+                'currency'       => config('services.razorpay.currency', 'INR'),
+                'interval'       => $request->interval,
+                'interval_count' => 1,
+                'status'         => 'active',
             ]);
 
-        DB::commit();
+            DB::commit();
 
-        Notification::create([
-            'user_id' => Auth::id(),
-            'type'    => 'success',
-            'message' => 'New plan "' . $plan->name . '" created successfully.',
-            'is_read' => false,
-        ]);
+            Notification::create([
+                'user_id' => Auth::id(),
+                'type'    => 'success',
+                'message' => 'New plan "' . $plan->name . '" created successfully.',
+                'is_read' => false,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Plan created successfully',
-            'plan'    => $plan
-        ], 201);
-
+            return response()->json([
+                'success' => true,
+                'message' => 'Plan created successfully',
+                'plan'    => $plan
+            ], 201);
 
         } catch (\Exception $e) {
-
             DB::rollBack();
 
             return response()->json([
@@ -98,7 +73,9 @@ class PlanController extends Controller
         }
     }
 
-    
+    /**
+     * List active plans
+     */
     public function index()
     {
         $plans = Plan::where('status', 'active')
@@ -111,26 +88,27 @@ class PlanController extends Controller
         ]);
     }
 
-   
+    /**
+     * Deactivate plan
+     */
     public function deactivate($id)
     {
         $plan = Plan::findOrFail($id);
 
-       $plan->update([
-    'status' => 'inactive'
-]);
+        $plan->update([
+            'status' => 'inactive'
+        ]);
 
-Notification::create([
-    'user_id' => Auth::id(),
-    'type'    => 'warning',
-    'message' => '⚠️ Plan "' . $plan->name . '" has been deactivated.',
-    'is_read' => false,
-]);
+        Notification::create([
+            'user_id' => Auth::id(),
+            'type'    => 'warning',
+            'message' => '⚠️ Plan "' . $plan->name . '" has been deactivated.',
+            'is_read' => false,
+        ]);
 
-return response()->json([
-    'success' => true,
-    'message' => 'Plan deactivated successfully'
-]);
-
+        return response()->json([
+            'success' => true,
+            'message' => 'Plan deactivated successfully'
+        ]);
     }
 }

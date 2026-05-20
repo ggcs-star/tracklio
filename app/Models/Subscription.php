@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
+use Carbon\Carbon;
 
 class Subscription extends Model
 {
@@ -11,27 +12,64 @@ class Subscription extends Model
 
     protected $fillable = [
         'user_id',
+        'plan_id',
 
-        // 🔥 LINK TO PLAN (VERY IMPORTANT)
-        'plan_id',          // ObjectId of plans collection
+        'plan_name',
+        'price',
+        'currency',
+        'interval',           // month | year
 
-        // Plan snapshot (at time of purchase)
-        'plan_type',        // monthly / yearly
-        'plan_name',        // Pro Monthly
-        'price',            // 999
-        'currency',         // INR
-        'interval',         // month / year
-
-        // Razorpay references
-        'razorpay_plan_id',
-        'razorpay_subscription_id',
         'razorpay_payment_id',
 
-        // Status
-        'status',           // pending | active | cancelled | failed
+        'status',             // active | expired | cancelled
+
+        'started_at',
+        'expires_at',
+        'cancelled_at',
     ];
 
     protected $casts = [
         'price' => 'float',
+        'started_at' => 'datetime',
+        'expires_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
+
+    /* =======================
+       🔥 ACCESS HELPERS
+    ======================= */
+
+    public function isActive()
+    {
+        return $this->status === 'active'
+            && $this->expires_at
+            && $this->expires_at->isFuture();
+    }
+
+    public function isExpired()
+    {
+        return $this->expires_at && $this->expires_at->isPast();
+    }
+
+    public function daysLeft()
+    {
+        return $this->expires_at
+            ? now()->diffInDays($this->expires_at, false)
+            : 0;
+    }
+
+    public function markExpired()
+    {
+        $this->update([
+            'status' => 'expired'
+        ]);
+    }
+
+    public function cancel()
+    {
+        $this->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now()
+        ]);
+    }
 }

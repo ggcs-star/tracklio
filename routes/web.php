@@ -119,6 +119,7 @@ Route::post('/forgot-password', [MongoPasswordResetController::class, 'sendReset
 
 Route::get('/reset-password/{token}', [MongoPasswordResetController::class, 'showResetForm'])
     ->name('password.reset');
+Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
 
 Route::post('/reset-password', [MongoPasswordResetController::class, 'resetPassword'])
     ->name('password.update');

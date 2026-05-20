@@ -25,7 +25,10 @@
 </IfModule>
 
 <IfModule mod_headers.c>
-    Header set Content-Type "image/svg+xml"
+    # Only set Content-Type for SVG files
+    <FilesMatch "\.svg$">
+        Header set Content-Type "image/svg+xml"
+    </FilesMatch>
 </IfModule>
 
 </IfModule>

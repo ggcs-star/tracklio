@@ -107,11 +107,12 @@
 </head>
 
 <body x-data="{
-    mode: '{{ request()->routeIs('register.page') ? 'register' : 'login' }}',
+    mode: '{{ isset($token) ? 'reset' : (request()->routeIs('register.page') ? 'register' : 'login') }}',
     showPassword: false,
     showConfirmPassword: false
 }"
 class="bg-gray-50 text-gray-800">
+
 
 <div class="min-h-screen flex">
     <!-- Left Side - Image/Info -->
@@ -217,6 +218,61 @@ class="bg-gray-50 text-gray-800">
                     </ul>
                 </div>
                 @endif
+<!-- FORGOT PASSWORD FORM -->
+<div x-show="mode === 'forgot'" x-transition class="space-y-6">
+
+    <h2 class="text-xl font-bold text-center mb-6">Forgot Password</h2>
+
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+        @csrf
+
+        <div>
+            <label class="block text-sm font-medium mb-2">Email Address</label>
+            <input type="email" name="email" required
+                   class="input-field w-full rounded-xl py-3.5 px-4">
+        </div>
+
+        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
+            Send Reset Link
+        </button>
+    </form>
+
+    <p class="text-sm text-center">
+        <a href="#" @click.prevent="mode = 'login'" class="text-indigo-600 font-semibold">
+            Back to Login
+        </a>
+    </p>
+</div>
+@if(isset($token))
+<div x-show="mode === 'reset'" x-transition class="space-y-6">
+
+    <h2 class="text-xl font-bold text-center mb-6">Reset Password</h2>
+
+    <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
+        @csrf
+        <input type="hidden" name="token" value="{{ $token }}">
+
+        <div>
+            <input type="email" name="email" value="{{ $email }}" required
+                   class="input-field w-full rounded-xl py-3.5 px-4">
+        </div>
+
+        <div>
+            <input type="password" name="password" placeholder="New Password" required
+                   class="input-field w-full rounded-xl py-3.5 px-4">
+        </div>
+
+        <div>
+            <input type="password" name="password_confirmation" placeholder="Confirm Password" required
+                   class="input-field w-full rounded-xl py-3.5 px-4">
+        </div>
+
+        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
+            Reset Password
+        </button>
+    </form>
+</div>
+@endif
 
                 <!-- LOGIN FORM -->
                 <div x-show="mode === 'login'" x-transition>
@@ -257,7 +313,10 @@ class="bg-gray-50 text-gray-800">
                                     <input type="checkbox" id="remember" class="rounded border-gray-300 text-indigo-600">
                                     <label for="remember" class="ml-2 text-sm text-gray-600">Remember me</label>
                                 </div>
-                                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Forgot password?</a>
+<a href="#" @click.prevent="mode = 'forgot'"
+   class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+   Forgot password?
+</a>
                             </div>
                         </div>
 
@@ -361,7 +420,7 @@ class="bg-gray-50 text-gray-800">
                         </div>
                     </div>
                     
-                    <div class="mt-6 grid grid-cols-2 gap-3">
+                    <!-- <div class="mt-6 grid grid-cols-2 gap-3">
                         <button type="button" class="flex items-center justify-center gap-3 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                             <i class="fab fa-google text-red-500"></i>
                             <span class="text-sm font-medium text-gray-700">Google</span>
@@ -371,7 +430,7 @@ class="bg-gray-50 text-gray-800">
                             <span class="text-sm font-medium text-gray-700">GitHub</span>
                         </button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Switch Links -->
                 <div class="text-center pt-6 border-t border-gray-100">

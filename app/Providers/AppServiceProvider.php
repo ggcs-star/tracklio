@@ -5,70 +5,63 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Plan;
 use App\Models\Subscription;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
-    
     public function register(): void
     {
-        
+        //
     }
 
-   
     public function boot(): void
     {
+        // Upload limits
         ini_set('upload_max_filesize', '200M');
         ini_set('post_max_size', '200M');
 
+        // SVG Response Macro
         Response::macro('svg', function ($content) {
             return response($content, 200)
                 ->header('Content-Type', 'image/svg+xml');
         });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Global View Data
+        |--------------------------------------------------------------------------
+        */
+
         View::composer('*', function ($view) {
 
+            // 🔹 Active Pro Plan (cheapest)
             $proPlan = Plan::where('status', 'active')
-                ->orderBy('amount') 
+                ->orderBy('amount')
                 ->first();
 
-            $view->with('proPlan', $proPlan);
-        });
+            // 🔹 Default user state
+            $isProUser = false;
 
-        View::composer('*', function ($view) {
+            // 🔹 Check subscription only if logged in
+            if (Auth::check()) {
 
-            if (!Auth::check()) {
-                $view->with('isProUser', false);
-                return;
+                $userId = (string) Auth::user()->_id;
+
+                $subscription = Subscription::where('user_id', $userId)
+                    ->where('status', 'active')
+                    ->where('expires_at', '>', now()) // ⭐ Correct expiry check
+                    ->latest()
+                    ->first();
+
+                $isProUser = !!$subscription;
             }
 
-            $userId = (string) Auth::user()->_id;
-
-            $subscription = Subscription::where('user_id', $userId)
-                ->where('status', 'active')
-                ->latest()
-                ->first();
-
-            if (!$subscription) {
-                $view->with('isProUser', false);
-                return;
-            }
-
-            $startDate = Carbon::parse($subscription->created_at);
-
-            if ($subscription->interval === 'monthly') {
-                $expiryDate = $startDate->copy()->addMonth();
-            } elseif ($subscription->interval === 'yearly') {
-                $expiryDate = $startDate->copy()->addYear();
-            } else {
-                $view->with('isProUser', false);
-                return;
-            }
-
-            $view->with('isProUser', now()->lt($expiryDate));
+            $view->with([
+                'proPlan'   => $proPlan,
+                'isProUser' => $isProUser,
+            ]);
         });
     }
 }

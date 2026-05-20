@@ -10,28 +10,31 @@ use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        try {
-            $userId = (string) auth()->user()->_id;
+public function index()
+{
+    try {
+        $userId = (string) auth()->user()->_id;
 
-            $facebookAccount = SocialAccount::forUser($userId)
-                ->where('platform', 'facebook')
-                ->where('status', 'connected')
-                ->first();
+        $facebookAccount = SocialAccount::forUser($userId)
+            ->where('platform', 'facebook')
+            ->where('status', 'connected')
+            ->first();
 
-            return view('dashboard.index', [
-                'facebookPages' => $facebookAccount->pages ?? []
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Dashboard index error', [
-                'user_id' => auth()->id(),
-                'error'   => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ]);
-            abort(500);
-        }
+   
+
+        return view('dashboard.index', [
+            'facebookPages' => $facebookAccount->pages ?? [],
+        ]);
+
+    } catch (\Throwable $e) {
+        Log::error('Dashboard index error', [
+            'user_id' => auth()->id(),
+            'error'   => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
+        ]);
+        abort(500);
     }
+}
 
     public function live(Request $request)
     {
