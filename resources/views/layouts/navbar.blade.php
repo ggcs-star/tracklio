@@ -1,3 +1,7 @@
+<script>
+    window.proPlan = @json($proPlan);
+</script>
+
 @php
     $user = Auth::user();
     $userName = $user->name ?? 'Guest User';
@@ -6,16 +10,9 @@
                     ->map(fn($word) => strtoupper(substr($word, 0, 1)))
                     ->join('');
 @endphp
-<script>
-    window.isProUser = @json(
-        \App\Models\Subscription::where(
-            'user_id',
-            (string) auth()->user()->_id
-        )
-        ->where('status', 'active')
-        ->exists()
-    );
-</script>
+
+
+
 <style>
     [x-cloak] { display: none !important; }
     .notification-slide {
@@ -192,42 +189,32 @@
                 </div>
             </div>
         </div>
+{{-- GET PRO BUTTONS --}}
 @if(!$isProUser)
-<button onclick="showPlanModal()"
-        class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
-               text-white text-sm font-semibold rounded-lg gap-2">
-    Get Pro
-</button>
-@endif
-@if(!$isProUser)
-<button
-    onclick="showPlanModal()"
-    class="
-        sm:hidden
-        flex items-center justify-center
-        w-10 h-10
-        rounded-lg
-        bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6]
-        text-white
-        shadow-md
-        active:scale-95
-        transition
-    "
-    aria-label="Get Pro"
->
-    Pro
-</button>
+
+    <button id="getProBtnDesktop"
+        onclick="showPlanModal()"
+        class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white text-sm font-semibold rounded-lg gap-2">
+        Get Pro
+    </button>
+
+    <button id="getProBtnMobile"
+        onclick="showPlanModal()"
+        class="sm:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-md">
+        ₹{{ $proPlan->amount ?? '' }}
+    </button>
+
 @endif
 
 
+{{-- PRO ACTIVE BADGE --}}
 @if($isProUser)
-<div class="hidden sm:flex items-center gap-2
-            px-4 py-2 rounded-lg
-            bg-gradient-to-r from-[#22c55e] to-[#16a34a]
-            text-white text-sm font-semibold
-            shadow-md cursor-default">
-    Pro Active
-</div>
+
+    <div id="proActiveBadge"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white text-sm font-semibold shadow-md">
+        Pro Active
+    </div>
+
 @endif
         <a href="{{ route('profile') }}" class="hidden sm:flex items-center gap-3">
             <div class="text-right">
@@ -251,22 +238,15 @@
 <script>
 let razorpayInstance = null;
 </script>
-
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+window.isProUser = window.isProUser || false;
+
 async function processPayment() {
     const button = document.getElementById('paymentButton');
-    if (!button) {
-        console.error('Payment button not found');
-        return;
-    }
-
     button.innerHTML = 'Opening secure payment…';
     button.disabled = true;
-    button.classList.add('opacity-80');
-
-
 
     try {
         const response = await fetch('/subscription/create', {
@@ -274,8 +254,7 @@ async function processPayment() {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':
-                    document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
             body: JSON.stringify({
                 plan_id: "{{ $proPlan?->_id }}"
@@ -284,87 +263,87 @@ async function processPayment() {
 
         const data = await response.json();
 
-        if (!data.subscription_id || !data.key) {
+        if (!data.order_id || !data.key) {
             throw new Error(data.message || 'Unable to start payment');
         }
 
         const options = {
             key: data.key,
-            subscription_id: data.subscription_id,
-
+            amount: data.amount * 100,
+            currency: "INR",
             name: "Tracklio",
-            description: "Pro Subscription ₹999",
+            description: "Pro Plan Subscription",
+            order_id: data.order_id,
 
-handler: function (response) {
+            handler: function (response) {
 
-    fetch('/subscription/verify', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN':
-                document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_subscription_id: response.razorpay_subscription_id,
-            razorpay_signature: response.razorpay_signature
-        })
-    })
-    .then(r => r.json())
-    .then(d => {
+                fetch('/subscription/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        plan_id: "{{ $proPlan?->_id }}"
+                    })
+                })
+                .then(r => r.json())
+                .then(d => {
 
-        if (d.status === 'success') {
+                    if (d.status === 'success') {
 
-            // ✅ SUCCESS UI
-            button.innerHTML = 'Payment Successful ✅';
-            button.disabled = true;
+                        // ✅ Set Pro state
+                        window.isProUser = true;
 
-            // ✅ CLOSE YOUR MODAL (THIS WAS MISSING)
-            setTimeout(() => {
-                hidePlanModal();
-            }, 800);
+                        // ✅ Update button text
+                        button.innerHTML = 'Payment Successful ✅';
 
-            // ✅ REFRESH (OPTIONAL)
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-
-        } else {
-            alert('Payment verification failed');
-            resetPaymentButton();
-        }
-    })
-    .catch(() => {
-        alert('Verification error');
-        resetPaymentButton();
-    });
+                        // ✅ Update Navbar UI instantly
+                    document.getElementById('getProBtnDesktop')?.classList.add('hidden');
+document.getElementById('getProBtnMobile')?.classList.add('hidden');
+document.getElementById('proActiveBadge')?.classList.remove('hidden');
 
 
+                        // ✅ Close modal
+                        setTimeout(() => hidePlanModal(), 800);
+
+                    } else {
+                        alert('Payment verification failed');
+                        resetPaymentButton();
+                    }
+                });
             },
 
             modal: {
                 ondismiss: function () {
-                    button.innerHTML = 'Subscribe at ₹999/month';
-                    button.disabled = false;
+                    resetPaymentButton();
                 }
             },
 
-            theme: {
-                color: "#4C6FFF"
-            }
+            theme: { color: "#4C6FFF" }
         };
 
-razorpayInstance = new Razorpay(options);
-razorpayInstance.open();
-
+        const rzp = new Razorpay(options);
+        rzp.open();
 
     } catch (e) {
         alert(e.message);
-        button.innerHTML = 'Subscribe at ₹999/month';
-        button.disabled = false;
+        resetPaymentButton();
     }
 }
+
+function resetPaymentButton() {
+    const button = document.getElementById('paymentButton');
+    if (!button) return;
+    button.innerHTML = `Subscribe at ₹${window.proPlan?.amount ?? '--'}/month`;
+    button.disabled = false;
+}
 </script>
+
+
 
 <script>
 function notificationDrawer() {
@@ -481,7 +460,7 @@ function showPlanModal() {
 const msg = document.getElementById('paymentSuccessMsg');
 
 if (btn) {
-    btn.innerHTML = 'Subscribe at ₹999/month';
+btn.innerHTML = `Subscribe at ₹${window.proPlan?.amount ?? '--'}/month`;
     btn.disabled = false;
 }
 
@@ -512,7 +491,9 @@ if (msg) msg.classList.add('hidden');
                        
                         <div class="text-center mb-5">
                             <div class="flex items-baseline justify-center gap-1 mb-2">
-                                <span class="text-3xl font-bold text-gray-900">₹999</span>
+<span class="text-3xl font-bold text-gray-900">
+    ₹${window.proPlan?.amount ?? '--'}
+</span>
                                 <span class="text-gray-500 text-sm">/month</span>
                             </div>
                             <p class="text-sm text-gray-600 mb-4">Everything you need to grow your social media presence</p>
@@ -553,7 +534,9 @@ if (msg) msg.classList.add('hidden');
                                     <span class="text-sm text-gray-600">Monthly subscription</span>
                                 </div>
                                 <div class="flex items-center justify-center gap-2 mb-1">
-                                    <span class="text-2xl font-bold text-gray-900">₹999</span>
+<span class="text-2xl font-bold text-gray-900">
+    ₹${window.proPlan?.amount ?? '--'}
+</span>
                                     <span class="text-gray-500">/month</span>
                                 </div>
                                 <p class="text-xs text-gray-500">Billed monthly, cancel anytime</p>
@@ -561,13 +544,15 @@ if (msg) msg.classList.add('hidden');
                         </div>
 
                         
-                        <button onclick="processPayment()"
-                                id="paymentButton"
-                                class="w-full py-3.5 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
-                                       text-white font-bold rounded-lg hover:shadow-lg hover:shadow-indigo-200 
-                                       transition-all text-sm mb-3">
-                            <i class="fas fa-lock mr-2 text-xs"></i>Subscribe at ₹999/month
-                        </button>
+     <button onclick="processPayment()"
+        id="paymentButton"
+        class="w-full py-3.5 bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] 
+               text-white font-bold rounded-lg hover:shadow-lg hover:shadow-indigo-200 
+               transition-all text-sm mb-3">
+    <i class="fas fa-lock mr-2 text-xs"></i>
+    Subscribe at ₹${window.proPlan?.amount ?? '--'}/month
+</button>
+
 <div id="paymentSuccessMsg"
      class="hidden mt-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm text-center">
     🎉 <strong>Payment Successful!</strong><br>
@@ -682,22 +667,3 @@ function showSuccessMessage() {
 
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const getProDesktop = document.getElementById('getProBtnDesktop');
-    const getProMobile  = document.getElementById('getProBtnMobile');
-    const proActive     = document.getElementById('proActiveBadge');
-
-    if (window.isProUser) {
-
-        getProDesktop?.classList.add('hidden');
-        getProMobile?.classList.add('hidden');
-        proActive?.classList.remove('hidden');
-    } else {
-        
-        getProDesktop?.classList.remove('hidden');
-        getProMobile?.classList.remove('hidden');
-        proActive?.classList.add('hidden');
-    }
-});
-</script>

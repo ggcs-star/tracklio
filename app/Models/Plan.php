@@ -10,24 +10,17 @@ class Plan extends Model
     protected $collection = 'plans';
 
     protected $fillable = [
-        // Internal / app level
-        'plan_key',          // pro_monthly, pro_yearly, etc.
-        'name',              // Pro Monthly
-        'description',       // Optional
+        'plan_key',
+        'name',
+        'description',
 
-        // Pricing
-        'amount',            // 999
-        'currency',          // INR
+        'amount',
+        'currency',
 
-        // Billing cycle
-        'interval',          // month | year
-        'interval_count',    // 1
+        'interval',        // month | year
+        'interval_count',
 
-        // Razorpay
-        'razorpay_plan_id',  // plan_xxxxxx
-
-        // Status
-        'status',            // active | inactive
+        'status',
     ];
 
     protected $casts = [
