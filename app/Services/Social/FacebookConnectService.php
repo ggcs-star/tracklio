@@ -13,138 +13,214 @@ class FacebookConnectService
 
     public function connect()
     {
-        try {
-            $authUrl = 'https://www.facebook.com/'.$this->version.'/dialog/oauth?' . http_build_query([
-                'client_id'     => env('FACEBOOK_CLIENT_ID'),
-                'redirect_uri'  => env('FACEBOOK_REDIRECT_URI'),
-                'response_type' => 'code',
-                'scope' => implode(',', [
-                    'pages_show_list',
-                    'pages_read_engagement',
-                    'pages_manage_metadata',
-                    'pages_manage_posts',
-                    'instagram_basic',
-                    'instagram_content_publish'
-                ]),
-            ]);
+        return view('social.facebook-connect');
+    }
+    public function redirectToFacebook()
+    {
+        $query = http_build_query([
+            'client_id' => env('FACEBOOK_CLIENT_ID'),
+            'redirect_uri' => env('FACEBOOK_REDIRECT_URI'),
+            'response_type' => 'code',
+            'scope' => implode(',', [
+                'pages_show_list',
+                'pages_manage_posts',
+                'pages_manage_engagement',
+                'pages_read_engagement',
+                'read_insights',
+                'business_management'
+            ]),
+            'config_id' => '1322825999814821',
+        ]);
 
-            return redirect($authUrl);
-        } catch (\Throwable $e) {
-            Log::critical('Facebook connect init failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return back()->with('error', 'Failed to connect Facebook');
-        }
+        return redirect(
+            "https://www.facebook.com/v19.0/dialog/oauth?" . $query
+        );
     }
 
+    
     public function callback(Request $request)
     {
         try {
-            if (!$request->code) {
-                return redirect()->route('accounts')
-                    ->with('error', 'Facebook authorization failed');
+
+            $code = $request->code;
+
+            if (!$code) {
+                return redirect()->route('accounts')->with('error', 'Authorization failed');
             }
 
-            $token = Http::asForm()->post(
+            $tokenResponse = Http::asForm()->post(
                 "https://graph.facebook.com/{$this->version}/oauth/access_token",
                 [
-                    'client_id'     => env('FACEBOOK_CLIENT_ID'),
+                    'client_id' => env('FACEBOOK_CLIENT_ID'),
                     'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-                    'redirect_uri'  => env('FACEBOOK_REDIRECT_URI'),
-                    'code'          => $request->code,
+                    'redirect_uri' => env('FACEBOOK_REDIRECT_URI'),
+                    'code' => $code,
                 ]
             )->json();
 
-            if (empty($token['access_token'])) {
-                return redirect()->route('accounts')
-                    ->with('error', 'Failed to get Facebook access token');
+            if (empty($tokenResponse['access_token'])) {
+                return redirect()->route('accounts')->with('error', 'Failed to get token');
             }
 
-            $userToken = $token['access_token'];
+            $userToken = $tokenResponse['access_token'];
+            $userInfo = Http::get("https://graph.facebook.com/{$this->version}/me", [
+                'access_token' => $userToken,
+                'fields' => 'id,name'
+            ])->json();
 
-            $pages = Http::get(
+            $profileName = $userInfo['name'] ?? 'Facebook Profile';
+            // 🔴 YAHAN TAK
+
+            $state = json_decode($request->state, true);
+
+            $type = $state['state'] ?? 'page';
+
+            if ($type === 'profile') {
+
+                $profileResponse = Http::get(
+                    "https://graph.facebook.com/{$this->version}/me",
+                    [
+                        'fields' => 'id,name,picture',
+                        'access_token' => $userToken,
+                    ]
+                )->json();
+
+                SocialAccount::updateOrCreate(
+                    [
+                        'user_id' => auth()->id(),
+                        'platform' => 'facebook'
+                    ],
+                    [
+                        'status' => 'connected',
+
+                        'credentials' => [
+                            'user_access_token' => $userToken
+                        ],
+
+                        'pages' => [
+                            [
+                                'page_id' => $profileResponse['id'],
+                                'page_name' => $profileResponse['name'],
+                                'type' => 'profile'
+                            ]
+                        ]
+                    ]
+                );
+
+                return redirect('/accounts')
+                    ->with('success', 'Facebook profile connected')
+                    ->with('facebook_connected_popup', true);
+            }
+
+            $pagesResponse = Http::get(
                 "https://graph.facebook.com/{$this->version}/me/accounts",
                 [
-                    'fields' => 'id,name,access_token',
+                    'fields' => 'id,name,access_token,picture',
                     'access_token' => $userToken,
                 ]
             )->json();
 
-            if (!isset($pages['data']) || count($pages['data']) === 0) {
-                return redirect()->route('accounts')
-                    ->with('error', 'Facebook connected but no pages available.');
+            if (empty($pagesResponse['data'])) {
+
+                return redirect()
+                    ->route('accounts')
+                    ->with('error', 'No pages found');
             }
 
-            $page = $pages['data'][0];
-
-            $ig = Http::get(
-                "https://graph.facebook.com/{$this->version}/{$page['id']}",
-                [
-                    'fields' => 'instagram_business_account',
-                    'access_token' => $page['access_token'],
-                ]
-            )->json();
-
-            SocialAccount::updateOrCreate(
-                ['user_id' => auth()->id(), 'platform' => 'facebook'],
-                [
-                    'status' => 'connected',
-                    'credentials' => [
-                        'user_access_token' => $userToken,
-                    ],
-                    'pages' => [[
-                        'page_id' => $page['id'],
-                        'page_name' => $page['name'],
-                        'page_access_token' => $page['access_token'],
-                    ]],
-                ]
-            );
-
-            if (!empty($ig['instagram_business_account']['id'])) {
-                SocialAccount::updateOrCreate(
-                    ['user_id' => auth()->id(), 'platform' => 'instagram'],
-                    [
-                        'status' => 'connected',
-                        'credentials' => [
-                            'instagram_business_id' => $ig['instagram_business_account']['id'],
-                            'page_id' => $page['id'],
-                            'page_access_token' => $page['access_token'],
-                        ],
-                    ]
-                );
-            }
-            
-                \App\Models\Notification::create([
-                    'user_id' => (string) auth()->id(),
-                    'type'    => 'facebook_connected',
-                    'message' => 'Facebook account connected successfully',
-                    'is_read' => false,
-                ]);
-
-               
-                if (!empty($ig['instagram_business_account']['id'])) {
-                    \App\Models\Notification::create([
-                        'user_id' => (string) auth()->id(),
-                        'type'    => 'instagram_connected',
-                        'message' => 'Instagram business account connected successfully',
-                        'is_read' => false,
-                    ]);
-                }
-
-
-            return redirect()->route('accounts')
-                ->with('success', 'Facebook & Instagram connected successfully');
-        } catch (\Throwable $e) {
-            Log::critical('Facebook callback failed', [
-                'user_id' => auth()->id(),
-                'error'   => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
+            session([
+                'fb_user_token' => $userToken
             ]);
 
-            return redirect()->route('accounts')
-                ->with('error', 'Facebook connection failed');
+            return view('social.facebook-pages-list', [
+                'pages' => $pagesResponse['data'],
+                'userToken' => $userToken,
+                'profileName' => $profileName,
+            ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error('Facebook callback failed', [
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->route('accounts')
+                ->with('error', 'Connection failed');
+        }
+    }
+     public function savePages(Request $request)
+    {
+        try {
+
+            $selectedPages = $request->input('pages', []);
+            $userToken = $request->input('user_token');
+            $profileName = $request->input('profile_name', 'Facebook Profile');
+
+            if (empty($selectedPages)) {
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No pages selected'
+                ]);
+            }
+
+            $pagesArray = [];
+
+            foreach ($selectedPages as $page) {
+
+               $pagesArray[] = [
+                    'page_id' => $page['id'],
+                    'page_name' => $page['name'],
+                    'page_access_token' => $page['access_token'],
+                    'profile_name' => $profileName,  // Use the profile name from request// Add profile name
+                ];
+            }
+
+            $existingAccount = SocialAccount::where('user_id', auth()->id())
+                ->where('platform', 'facebook')
+                ->first();
+
+            if ($existingAccount) {
+                $existingPages = $existingAccount->pages ?? [];
+                $allPages = array_merge($existingPages, $pagesArray);
+                $allPages = collect($allPages)
+                    ->unique('page_id')
+                    ->values()
+                    ->toArray();
+                
+                $existingAccount->update([
+                    'status' => 'connected',
+                    'credentials' => ['user_access_token' => $userToken],
+                    'pages' => $allPages,  
+                ]);
+            } else {
+                // Create new account
+                SocialAccount::create([
+                    'user_id' => auth()->id(),
+                    'platform' => 'facebook',
+                    'status' => 'connected',
+                    'credentials' => ['user_access_token' => $userToken],
+                    'pages' => $pagesArray,
+                ]);
+            }
+            session()->flash('facebook_connected_popup', true);
+
+            return response()->json([
+                'success' => true
+            ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error('Save pages failed', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
         }
     }
 }

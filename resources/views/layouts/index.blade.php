@@ -14,6 +14,9 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
  
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <!-- Add this in your head section or @push('styles') -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-mart@5.5.2/css/emoji-mart.css">
+<script src="https://cdn.jsdelivr.net/npm/emoji-mart@5.5.2/dist/browser.js"></script>
 
   @stack('styles')
 
@@ -240,10 +243,23 @@
   </svg>
 </button>
 
-
-
-
 @stack('scripts')
+@yield('scripts')
+
+<script>
+  function openFacebookPopup() {
+    const width = 600;
+    const height = 700;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+    
+    window.open(
+      '/facebook/connect',
+      'Facebook Connect',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+  }
+</script>
 
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -577,6 +593,5 @@
   }
 </style>
 
-@stack('scripts')
 </body>
 </html>
