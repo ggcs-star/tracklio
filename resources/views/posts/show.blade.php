@@ -587,42 +587,83 @@
         @endif -->
         
         <div class="omnipost-stats-row">
-            <div class="omnipost-stat-card">
-                <div class="omnipost-stat-icon-lg">
-                    <i class="far fa-eye"></i>
-                </div>
-                <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
-                <div class="omnipost-stat-label">Total Views</div>
-            </div>
-            <div class="omnipost-stat-card">
-                <div class="omnipost-stat-icon-lg">
-                    <i class="far fa-heart"></i>
-                </div>
-                <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
-                <div class="omnipost-stat-label">Total Likes</div>
-            </div>
-            <div class="omnipost-stat-card">
-                <div class="omnipost-stat-icon-lg">
-                    <i class="far fa-comment"></i>
-                </div>
-                <div class="omnipost-stat-number">{{ number_format($comments ?? 0) }}</div>
-                <div class="omnipost-stat-label">Total Comments</div>
-            </div>
-            <div class="omnipost-stat-card">
-                <div class="omnipost-stat-icon-lg">
-                    <i class="far fa-share-square"></i>
-                </div>
-                <div class="omnipost-stat-number">{{ number_format($shares ?? 0) }}</div>
-                <div class="omnipost-stat-label">Total Shares</div>
-            </div>
-            <div class="omnipost-stat-card">
-                <div class="omnipost-stat-icon-lg">
-                    <i class="far fa-chart-line"></i>
-                </div>
-                <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}%</div>
-                <div class="omnipost-stat-label">Engagement Rate</div>
-            </div>
+    @if($platform === 'youtube')
+    <!-- YouTube Stats -->
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-eye"></i>
         </div>
+        <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Views</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-heart"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Likes</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-comment"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($comments ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Comments</div>
+    </div>
+    @elseif($platform === 'instagram')
+    <!-- Instagram Stats -->
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-heart"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Likes</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-comment"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($comments ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Comments</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-chart-line"></i>
+        </div>
+        <div class="omnipost-stat-number">
+            @php
+                $total = ($reactions ?? 0) + ($comments ?? 0);
+                $engagementRate = $total > 0 ? round(($total / max($reactions, 1)) * 100) : 0;
+            @endphp
+            {{ $engagementRate }}%
+        </div>
+        <div class="omnipost-stat-label">Engagement Rate</div>
+    </div>
+    @else
+    <!-- Facebook Stats -->
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-heart"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($reactions ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Reactions</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-comment"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($comments ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Comments</div>
+    </div>
+    <div class="omnipost-stat-card">
+        <div class="omnipost-stat-icon-lg">
+            <i class="far fa-share-square"></i>
+        </div>
+        <div class="omnipost-stat-number">{{ number_format($shares ?? 0) }}</div>
+        <div class="omnipost-stat-label">Total Shares</div>
+    </div>
+    @endif
+</div>
         
         <div class="omnipost-toggle">
             <button class="omnipost-toggle-btn active" onclick="toggleChart('total')">Total</button>

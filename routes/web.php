@@ -25,8 +25,8 @@ use App\Http\Controllers\{
     BroadcastGroupController,
     SubscriptionController,
     PlanController,
-    calendarController,
-    ajaxSuggestionController
+    CalendarController,
+    AjaxSuggestionController
 };
 Route::get('/storage/{path}', function ($path) {
     // Pehle check karo file storage folder mein hai

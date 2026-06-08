@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Post\PostCrudService;
 use Illuminate\Support\Facades\Http;
+use App\Models\SocialAccount;
 
 class PostController extends Controller
 {
@@ -24,6 +25,7 @@ class PostController extends Controller
     {
         return $this->posts->store($request);
     }
+
     public function show($id)
     {
         $post = \App\Models\Post::find($id);
@@ -62,44 +64,78 @@ class PostController extends Controller
                 }
                 
                 if ($token) {
-                    $fbPost = Http::timeout(5)->get("https://graph.facebook.com/v24.0/{$post->facebook_post_id}", [
-                        'fields' => 'reactions.summary(true),comments.summary(true)',
+                    $fbPost = Http::timeout(10)->get("https://graph.facebook.com/v20.0/{$post->facebook_post_id}", [
+                        'fields' => 'reactions.summary(true),comments.summary(true),shares',
                         'access_token' => $token
                     ])->json();
                     
                     $reactions = $fbPost['reactions']['summary']['total_count'] ?? 0;
                     $comments = $fbPost['comments']['summary']['total_count'] ?? 0;
+                    $shares = $fbPost['shares']['count'] ?? 0;
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                \Log::error('Facebook post fetch failed: ' . $e->getMessage());
+            }
         }
         
         if ($platform === 'instagram') {
             try {
-                $instagramAccount = SocialAccount::where('user_id', (string) $post->user_id)
-                    ->where('platform', 'instagram')
-                    ->where('_id', $post->instagram_profile_id)
-                    ->first();
+                $token = null;
+                $instagramAccount = null;
                 
-                $token = $instagramAccount->credentials['page_access_token'] ?? null;
+                // FIRST: Try to find by instagram_profile_id from post
+                if ($post->instagram_profile_id) {
+                    $instagramAccount = SocialAccount::where('user_id', (string) $post->user_id)
+                        ->where('platform', 'instagram')
+                        ->where('_id', $post->instagram_profile_id)
+                        ->first();
+                }
+                
+                // SECOND: If not found, get any instagram account
+                if (!$instagramAccount) {
+                    $instagramAccount = SocialAccount::where('user_id', (string) $post->user_id)
+                        ->where('platform', 'instagram')
+                        ->first();
+                }
+                
+                if ($instagramAccount) {
+                    $token = $instagramAccount->credentials['page_access_token'] ?? 
+                            $instagramAccount->credentials['access_token'] ?? null;
+                }
                 
                 if ($token && $post->instagram_post_id) {
-                    $igPost = Http::timeout(5)->get("https://graph.facebook.com/v24.0/{$post->instagram_post_id}", [
+                    $igPost = Http::timeout(10)->get("https://graph.facebook.com/v20.0/{$post->instagram_post_id}", [
                         'fields' => 'like_count,comments_count',
                         'access_token' => $token
                     ])->json();
                     
-                    $reactions = $igPost['like_count'] ?? 0;
-                    $comments = $igPost['comments_count'] ?? 0;
+                    if (!isset($igPost['error'])) {
+                        $reactions = $igPost['like_count'] ?? 0;
+                        $comments = $igPost['comments_count'] ?? 0;
+                    } else {
+                        \Log::warning('Instagram API error for post: ' . $post->instagram_post_id, [
+                            'error' => $igPost['error']['message'] ?? 'Unknown'
+                        ]);
+                    }
+                    $shares = 0;
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                \Log::error('Instagram post fetch failed: ' . $e->getMessage());
+            }
         }
         
         if ($platform === 'youtube' && $post->youtube_video_id) {
             try {
                 $youtubeAccount = SocialAccount::where('user_id', (string) $post->user_id)
                     ->where('platform', 'youtube')
-                    ->where('_id', $post->youtube_account_id)
                     ->first();
+                
+                if ($post->youtube_account_id) {
+                    $youtubeAccount = SocialAccount::where('user_id', (string) $post->user_id)
+                        ->where('platform', 'youtube')
+                        ->where('_id', $post->youtube_account_id)
+                        ->first();
+                }
                 
                 if ($youtubeAccount) {
                     $creds = $youtubeAccount->credentials;
@@ -116,7 +152,7 @@ class PostController extends Controller
                         
                         if ($tokenRes->successful()) {
                             $accessToken = $tokenRes->json('access_token');
-                            $ytVideo = Http::timeout(5)->withToken($accessToken)->get(
+                            $ytVideo = Http::timeout(10)->withToken($accessToken)->get(
                                 "https://www.googleapis.com/youtube/v3/videos",
                                 [
                                     'part' => 'statistics',
@@ -125,13 +161,15 @@ class PostController extends Controller
                             )->json();
                             
                             $stats = $ytVideo['items'][0]['statistics'] ?? [];
-                            $reactions = $stats['likeCount'] ?? 0;
-                            $comments = $stats['commentCount'] ?? 0;
+                            $reactions = (int) ($stats['likeCount'] ?? 0);
+                            $comments = (int) ($stats['commentCount'] ?? 0);
                             $shares = 0;
                         }
                     }
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                \Log::error('YouTube post fetch failed: ' . $e->getMessage());
+            }
         }
 
         $platformIcons = [
