@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class AjaxSuggestionController extends Controller
 {
-   // ========== LOCATION SEARCH - ONLY OSM ==========
    public function searchLocation(Request $request)
    {
        $query = $request->get('q', '');
@@ -51,7 +50,6 @@ class AjaxSuggestionController extends Controller
            Log::error('Location search failed: ' . $e->getMessage());
        }
        
-       // Remove duplicates
        $seen = [];
        $uniqueResults = [];
        foreach ($results as $result) {
@@ -77,7 +75,6 @@ class AjaxSuggestionController extends Controller
        return $name;
    }
    
-   // ========== HASHTAG SEARCH - ORIGINAL (NO CHANGE) ==========
    public function searchHashtag(Request $request)
    {
        $query = $request->get('q', '');
@@ -147,9 +144,7 @@ class AjaxSuggestionController extends Controller
        
        return response()->json($results);
    }
-   
-   // ========== MENTION SEARCH - ORIGINAL (NO CHANGE) ==========
-   public function searchMention(Request $request)
+      public function searchMention(Request $request)
    {
        $query = $request->get('q', '');
        

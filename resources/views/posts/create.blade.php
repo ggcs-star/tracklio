@@ -1106,15 +1106,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('scripts')
 <script>
-// Global variables
 let selected = [];
 let selectedFiles = [];
 let filePreviews = [];
 let selectedFacebookPage = null;
 let selectedInstagramProfile = null;
 let selectedYoutubeChannel = null;
-
-// Facebook post type state
 let facebookPostType = 'post';
 let instagramPostType = 'post';
 function renderPreview() {

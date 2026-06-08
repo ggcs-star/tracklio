@@ -101,22 +101,20 @@ class PostCrudService
 
             $content = $request->input('content', '');
 
+            $content = html_entity_decode($content);
 
+            $content = trim($content);
 
-$content = html_entity_decode($content);
-
-$content = trim($content);
-
-if (
-    $content === '' &&
-    !$request->hasFile('media') &&
-    !$request->hasFile('media_files') &&
-    !$request->filled('media_url')
-) {
-    throw new \Exception(
-        'Post content, media file, or media URL is required'
-    );
-}
+            if (
+                $content === '' &&
+                !$request->hasFile('media') &&
+                !$request->hasFile('media_files') &&
+                !$request->filled('media_url')
+            ) {
+                throw new \Exception(
+                    'Post content, media file, or media URL is required'
+                );
+            }
 
             $platforms = json_decode($request->platforms, true);
 
@@ -125,6 +123,46 @@ if (
             }
 
             $platforms = array_map('strtolower', $platforms);
+            
+            if (in_array('youtube', $platforms)) {
+                $hasVideo = $request->hasFile('media') || $request->hasFile('media_files');
+                
+                if (!$hasVideo) {
+                    throw new \Exception('YouTube requires a video file. Please upload MP4/MOV file.');
+                }
+                
+                if ($request->hasFile('media')) {
+                    $file = $request->file('media');
+                    $mime = $file->getMimeType();
+                    if (!str_starts_with($mime, 'video/')) {
+                        throw new \Exception('YouTube requires a video file. You uploaded an image. Please upload MP4/MOV file.');
+                    }
+                }
+                
+                if ($request->hasFile('media_files')) {
+                    $files = $request->file('media_files');
+                    $firstFile = $files[0];
+                    $mime = $firstFile->getMimeType();
+                    if (!str_starts_with($mime, 'video/')) {
+                        throw new \Exception('YouTube requires a video file. You uploaded an image. Please upload MP4/MOV file.');
+                    }
+                }
+            }
+
+            if (in_array('instagram', $platforms)) {
+                $igPostType = $request->input('ig_post_type', 'post');
+                $hasMedia = $request->hasFile('media') || $request->hasFile('media_files');
+                
+                if ($igPostType === 'post' && !$hasMedia) {
+                    throw new \Exception('Instagram post requires an image file. Please upload JPG/PNG file.');
+                }
+                
+                if (($igPostType === 'reel' || $igPostType === 'story') && !$hasMedia) {
+                    throw new \Exception('Instagram ' . $igPostType . ' requires media file.');
+                }
+            }
+
+
             $status = 'processing';
             if (
                 $request->status === 'scheduled' &&
@@ -208,13 +246,10 @@ if (
 
             if (in_array('instagram', $platforms)) {
             try {
-                // Check both media and media_files
                 $hasMedia = $request->hasFile('media') || $request->hasFile('media_files');
                 if (!$hasMedia) {
                     throw new \Exception('Instagram requires image or video file.');
                 }
-                
-                // If using media_files, use first file as media for Instagram
                 if (!$request->hasFile('media') && $request->hasFile('media_files')) {
                     $files = $request->file('media_files');
                     if (count($files) > 0) {
@@ -226,8 +261,6 @@ if (
                 if (is_array($igPostType)) {
                     $igPostType = $igPostType[0] ?? 'post';
                 }
-                
-                // ✅ Direct call - no queue
                 $this->instagram->publish($request, $post);
                 $success[] = 'Instagram';
                 

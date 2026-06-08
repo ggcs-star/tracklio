@@ -21,25 +21,25 @@ class InstagramPostService
         $postType = $post->ig_post_type ?? $request->input('ig_post_type', 'post');
         $instagramProfileId = $request->input('instagram_profile_id');
 
-if (!$instagramProfileId) {
-    throw new \Exception('Please select Instagram profile.');
-}
+        if (!$instagramProfileId) {
+            throw new \Exception('Please select Instagram profile.');
+        }
 
-$instagramAccount = SocialAccount::where('_id', $instagramProfileId)
-    ->where('user_id', $post->user_id)
-    ->where('platform', 'instagram')
-    ->first();
+        $instagramAccount = SocialAccount::where('_id', $instagramProfileId)
+            ->where('user_id', $post->user_id)
+            ->where('platform', 'instagram')
+            ->first();
 
-if (!$instagramAccount) {
-    throw new \Exception('Instagram account not found.');
-}
+        if (!$instagramAccount) {
+            throw new \Exception('Instagram account not found.');
+        }
 
-$accessToken = $instagramAccount->credentials['page_access_token'] ?? null;
-$igId = $instagramAccount->credentials['instagram_business_id'] ?? null;
+        $accessToken = $instagramAccount->credentials['page_access_token'] ?? null;
+        $igId = $instagramAccount->credentials['instagram_business_id'] ?? null;
 
-if (!$accessToken || !$igId) {
-    throw new \Exception('Instagram profile configuration invalid.');
-}
+        if (!$accessToken || !$igId) {
+            throw new \Exception('Instagram profile configuration invalid.');
+        }
         if (!$post->media_path || !Storage::disk('public')->exists($post->media_path)) {
             throw new \Exception('Instagram media file not found.');
         }

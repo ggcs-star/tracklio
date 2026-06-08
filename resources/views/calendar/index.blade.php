@@ -82,7 +82,6 @@
         All Platforms
     </button>
     
-    <!-- Facebook Icon -->
     <button onclick="filterPlatform('facebook')" id="filterFacebook" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm transition hover:bg-blue-50">
         <svg class="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
             <path d="M22 12A10 10 0 1 0 10.438 21.89v-6.922H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.969h-2.33v6.922A10 10 0 0 0 22 12Z"/>
@@ -90,26 +89,13 @@
         <span>Facebook</span>
     </button>
     
-    <!-- Instagram Real Icon -->
-    <button onclick="filterPlatform('instagram')" id="filterInstagram" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm transition hover:bg-pink-50">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.75 3H7.25C4.90279 3 3 4.90279 3 7.25V16.75C3 19.0972 4.90279 21 7.25 21H16.75C19.0972 21 21 19.0972 21 16.75V7.25C21 4.90279 19.0972 3 16.75 3Z" fill="url(#instagramGradient)"/>
-            <path d="M12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8Z" fill="white"/>
-            <path d="M17 7.5C17.2761 7.5 17.5 7.27614 17.5 7C17.5 6.72386 17.2761 6.5 17 6.5C16.7239 6.5 16.5 6.72386 16.5 7C16.5 7.27614 16.7239 7.5 17 7.5Z" fill="white"/>
-            <defs>
-                <linearGradient id="instagramGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#FCAF45"/>
-                    <stop offset="25%" stop-color="#F77737"/>
-                    <stop offset="50%" stop-color="#F56040"/>
-                    <stop offset="75%" stop-color="#E1306C"/>
-                    <stop offset="100%" stop-color="#C13584"/>
-                </linearGradient>
-            </defs>
-        </svg>
-        <span>Instagram</span>
-    </button>
+   <button onclick="filterPlatform('instagram')" id="filterInstagram" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm transition hover:bg-pink-50">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#E1306C" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.332.014 7.052.072c-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
+    </svg>
+    <span>Instagram</span>
+</button>
     
-    <!-- YouTube Icon -->
     <button onclick="filterPlatform('youtube')" id="filterYoutube" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm transition hover:bg-red-50">
         <svg class="w-5 h-5" fill="#FF0000" viewBox="0 0 24 24">
             <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12c0 1.9.2 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.8.5 9.4.5 9.4.5s7.6 0 9.4-.5a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.9.5-5.8 0-1.9-.2-3.9-.5-5.8Z"/>
@@ -177,9 +163,22 @@
 
                             @foreach($dayPosts as $post)
 
-                                @php
-                                    $platform = $post->platforms[0] ?? 'social';
-                                    $type = $post->facebook_post_type ?? $post->ig_post_type ?? 'post';
+                               @php
+                                $platformsList = $post->platforms ?? [];
+                                $platform = !empty($platformsList) ? implode(' + ', array_map('ucfirst', $platformsList)) : 'Social';
+                                $displayPlatform = $platformsList[0] ?? 'social'; 
+                                
+                                $typeLabels = [];
+                                if (in_array('facebook', $platformsList) && $post->facebook_post_type) {
+                                    $typeLabels[] = ucfirst($post->facebook_post_type);
+                                }
+                                if (in_array('instagram', $platformsList) && $post->ig_post_type) {
+                                    $typeLabels[] = ucfirst($post->ig_post_type);
+                                }
+                                if (in_array('youtube', $platformsList)) {
+                                    $typeLabels[] = 'Video';
+                                }
+                                $typeLabel = !empty($typeLabels) ? implode(' + ', $typeLabels) : 'Post';
                                     
                                     $media = null;
                                     $mediaCount = 0;
@@ -214,7 +213,7 @@
                                     }
                                     
                                     // YouTube check
-                                    if ($platform === 'youtube') {
+                                    if (in_array('youtube', $platformsList)) {
                                         $youtubePattern = '/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/';
                                         if (!empty($post->media_path) && preg_match($youtubePattern, $post->media_path, $matches)) {
                                             $youtubeId = $matches[1];
@@ -229,7 +228,6 @@
                                         }
                                     }
                                     
-                                    // Video/Image check
                                     if ($media && !$isYouTube) {
                                         $mediaLower = strtolower($media);
                                         if (preg_match('/\.(mp4|mov|avi|webm|mkv|m4v)$/i', $mediaLower)) {
@@ -239,21 +237,20 @@
                                         }
                                     }
                                     
-                                    $bgColor = match($platform) {
+                                   $bgColor = match($displayPlatform) {
                                         'facebook' => 'border-l-4 border-l-blue-500 bg-blue-50 hover:bg-blue-100',
                                         'instagram' => 'border-l-4 border-l-pink-500 bg-pink-50 hover:bg-pink-100',
                                         'youtube' => 'border-l-4 border-l-red-600 bg-red-50 hover:bg-red-100',
                                         default => 'border-l-4 border-l-gray-500 bg-gray-50 hover:bg-gray-100'
                                     };
-                                    
-                                    $platformLabel = ucfirst($platform);
-                                    $typeLabel = ucfirst($type);
-                                    $platformClass = strtolower($platform);
+
+                                    $platformLabel = $platform;  
+                                    $platformClass = $displayPlatform;  
                                 @endphp
 
                                 <div 
                                     class="post-card {{ $platformClass }} {{ $bgColor }} border rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all duration-200"
-                                    data-platform="{{ $platformClass }}"
+                                    data-platform="{{ implode(' ', $platformsList) }}"
                                     onclick='openMobilePreview(
                                         {{ json_encode($platformLabel) }},
                                         {{ json_encode($typeLabel) }},
@@ -268,21 +265,26 @@
                                     )'
                                 >
                                     <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-6 h-6 rounded-full flex items-center justify-center">
-                                            @if($platform === 'facebook')
-                                                <svg class="w-4 h-4" fill="#1877F2" viewBox="0 0 24 24">
+                                        <div class="flex items-center gap-1">
+                                            @if(in_array('facebook', $platformsList))
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1877F2">
                                                     <path d="M22 12A10 10 0 1 0 10.438 21.89v-6.922H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.969h-2.33v6.922A10 10 0 0 0 22 12Z"/>
                                                 </svg>
-                                            @elseif($platform === 'instagram')
-                                                <svg class="w-4 h-4" fill="#E1306C" viewBox="0 0 24 24">
-                                                    <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5Z"/>
+                                            @endif
+                                           @if(in_array('instagram', $platformsList))
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#E1306C">
+                                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.332.014 7.052.072c-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
                                                 </svg>
-                                            @elseif($platform === 'youtube')
-                                                <svg class="w-4 h-4" fill="#FF0000" viewBox="0 0 24 24">
+                                            @endif
+                                            @if(in_array('youtube', $platformsList))
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#FF0000">
                                                     <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12c0 1.9.2 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.8.5 9.4.5 9.4.5s7.6 0 9.4-.5a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.9.5-5.8 0-1.9-.2-3.9-.5-5.8Z"/>
+                                                    <polygon fill="white" points="9.5,8 9.5,16 16,12"/>
                                                 </svg>
                                             @endif
                                         </div>
+
+
                                         <div class="flex-1">
                                             <p class="text-xs font-semibold text-gray-800">{{ $platformLabel }}</p>
                                             <p class="text-[10px] text-gray-500">{{ $typeLabel }}</p>
@@ -424,10 +426,18 @@ function filterPlatform(platform) {
     });
     
     const allPosts = document.querySelectorAll('.post-card');
-    allPosts.forEach(post => {
-        if (platform === 'all') post.style.display = 'block';
-        else post.style.display = post.getAttribute('data-platform') === platform ? 'block' : 'none';
-    });
+        allPosts.forEach(post => {
+            if (platform === 'all') {
+                post.style.display = 'block';
+            } else {
+                const postPlatforms = post.getAttribute('data-platform').split(' ');
+                if (postPlatforms.includes(platform)) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            }
+        });
     
     for (let day = 1; day <= 31; day++) {
         const dayContainer = document.getElementById(`day-${day}`);
