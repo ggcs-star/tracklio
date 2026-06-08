@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('facebook:hourly-stats')
             ->hourly()
             ->withoutOverlapping();
+        $schedule->command('posts:publish-scheduled')->everyMinute();
 
         $schedule->call(function () {
             \Log::info('Expiry reminder scheduler executed');

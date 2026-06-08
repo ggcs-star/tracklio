@@ -24,27 +24,32 @@ use App\Http\Controllers\{
     NotificationController,
     BroadcastGroupController,
     SubscriptionController,
-    PlanController
+    PlanController,
+    CalendarController,
+    AjaxSuggestionController
 };
+Route::get('/storage/{path}', function ($path) {
+    // Pehle check karo file storage folder mein hai
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (File::exists($fullPath)) {
+        $file = File::get($fullPath);
+        $type = File::mimeType($fullPath);
+        return response($file, 200)->header('Content-Type', $type);
+    }
+    
+    // Agar nahi mili toh 404
+    abort(404);
+})->where('path', '.*');
 
 use App\Models\QrLink;
-
-
-    // Create Razorpay plan + DB save
     Route::post('/plans', [PlanController::class, 'create']);
 
-    // Get all active plans (for UI)
     Route::get('/plans', [PlanController::class, 'index']);
 
-    // Deactivate a plan
     Route::patch('/plans/{id}/deactivate', [PlanController::class, 'deactivate']);
 
-
-/*
-|--------------------------------------------------------------------------
-| QR IMAGE (SVG SERVE) – IMPORTANT
-|--------------------------------------------------------------------------
-*/Route::get('/razorpay/success', function (Request $request) {
+    Route::get('/razorpay/success', function (Request $request) {
 
     if (auth()->check()) {
         app(SubscriptionController::class)->syncStatus();
@@ -185,70 +190,64 @@ Route::post(
     Route::get('/create-post', [PostController::class, 'create'])->name('posts.create');
     Route::post('/create-post', [PostController::class, 'store'])->name('posts.store');
 
-  
-    Route::get('/accounts', [SocialAccountController::class, 'index'])->name('accounts');
+Route::get('/facebook/connect', [SocialAccountController::class, 'connectFacebook'])->name('facebook.connect');  // Modal ke liye (view)
+Route::get('/facebook/oauth', [SocialAccountController::class, 'redirectToFacebook'])->name('facebook.oauth');    // Naya - OAuth redirect
+Route::get('/facebook/callback', [SocialAccountController::class, 'facebookCallback'])->name('facebook.callback');
 
-    Route::get('/accounts/facebook/connect', [SocialAccountController::class, 'connectFacebook'])->name('facebook.connect');
-    Route::get('/accounts/facebook/callback', [SocialAccountController::class, 'facebookCallback'])->name('facebook.callback');
+Route::get('/accounts', [SocialAccountController::class, 'index'])->name('accounts');
+Route::post('/facebook/select-pages', [SocialAccountController::class, 'selectFacebookPages'])->name('facebook.select-pages');
 
-    Route::post('/accounts/instagram/connect', [SocialAccountController::class, 'connectInstagram'])->name('instagram.connect');
+Route::post('/instagram/connect', [SocialAccountController::class, 'connectInstagram'])->name('instagram.connect');
 
-    Route::get('/youtube/connect', [SocialAccountController::class, 'connectYouTube'])->name('youtube.connect');
-    Route::get('/youtube/callback', [SocialAccountController::class, 'youtubeCallback'])->name('youtube.callback');
+Route::get('/instagram/connect/direct',[SocialAccountController::class, 'instagramDirect'])->name('instagram.direct');
 
-    Route::post('/accounts/disconnect', [SocialAccountController::class, 'disconnect'])->name('accounts.disconnect');
+Route::get('/instagram/connect/facebook',[SocialAccountController::class, 'instagramFacebook'])->name('instagram.facebook');
 
-    
-    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+Route::get('/instagram/direct/callback',[SocialAccountController::class, 'instagramDirectCallback'])->name('instagram.direct.callback');
 
-   
-    Route::get('/short-links', [ShortLinkController::class, 'index'])->name('short-links.index');
-    Route::post('/short-links', [ShortLinkController::class, 'store']);
-    Route::post('/short-links/{id}/update', [ShortLinkController::class, 'update'])->name('short-links.update');
-    Route::delete('/short-links/{id}', [ShortLinkController::class, 'destroy'])->name('short-links.destroy');
-    Route::get('/short-links/analytics', [ShortLinkController::class, 'analytics'])->name('short-links.analytics');
+Route::get('/instagram/facebook/callback',[SocialAccountController::class, 'instagramFacebookCallback'])->name('instagram.facebook.callback');
+Route::get('/youtube/connect', [SocialAccountController::class, 'connectYouTube'])->name('youtube.connect');
+Route::get('/youtube/callback', [SocialAccountController::class, 'youtubeCallback'])->name('youtube.callback');
+Route::post('/accounts/disconnect', [SocialAccountController::class, 'disconnect'])->name('accounts.disconnect');
+Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+Route::get('/short-links', [ShortLinkController::class, 'index'])->name('short-links.index');
+Route::post('/short-links', [ShortLinkController::class, 'store']);
+Route::post('/short-links/{id}/update', [ShortLinkController::class, 'update'])->name('short-links.update');
+Route::delete('/short-links/{id}', [ShortLinkController::class, 'destroy'])->name('short-links.destroy');
+Route::get('/short-links/analytics', [ShortLinkController::class, 'analytics'])->name('short-links.analytics');
 
-   
-    Route::get('/qr-links', [QrLinkController::class, 'index'])->name('qr-links.index');
-    Route::post('/qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
-    Route::post('/qr-links/{id}/update', [QrLinkController::class, 'update'])->name('qr-links.update');
-    Route::delete('/qr-links/{id}', [QrLinkController::class, 'destroy'])->name('qr-links.destroy');
-    Route::get('/qr-links/{id}', [QrLinkController::class, 'show'])->name('qr-links.show');
+Route::get('/qr-links', [QrLinkController::class, 'index'])->name('qr-links.index');
+Route::post('/qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
+Route::post('/qr-links/{id}/update', [QrLinkController::class, 'update'])->name('qr-links.update');
+Route::delete('/qr-links/{id}', [QrLinkController::class, 'destroy'])->name('qr-links.destroy');
+Route::get('/qr-links/{id}', [QrLinkController::class, 'show'])->name('qr-links.show');
 
-    
-      Route::get('/contacts', [ContactsController::class, 'index']);
-    Route::post('/contacts', [ContactsController::class, 'store']);
-    Route::post('/contacts/upload-csv', [ContactsController::class, 'uploadCsv']);
-    Route::get('/contacts-page', function () {
-        return view('contacts.index');
-    });
+Route::get('/calendar',[CalendarController::class, 'index'])->name('calendar.index');
 
-Route::get('/whatsapp-accounts', [WhatsAppAccountController::class, 'page'])
-    ->name('whatsapp.accounts');
+Route::get('/calendar/posts',[CalendarController::class, 'posts'])->name('calendar.posts');
+
+Route::get('/calendar/post/{id}',[CalendarController::class, 'show'])->name('calendar.post.show');
+Route::get('/contacts', [ContactsController::class, 'index']);
+Route::post('/contacts', [ContactsController::class, 'store']);
+Route::post('/contacts/upload-csv', [ContactsController::class, 'uploadCsv']);
+Route::get('/contacts-page', function () {return view('contacts.index');});
+
+Route::get('/whatsapp-accounts', [WhatsAppAccountController::class, 'page'])->name('whatsapp.accounts');
 Route::get('/whatsapp-accounts/data', [WhatsAppAccountController::class, 'index']);
 Route::post('/whatsapp-accounts', [WhatsAppAccountController::class, 'store']);
 Route::delete('/whatsapp-accounts/{id}', [WhatsAppAccountController::class, 'destroy']);
-
-    Route::post('/whatsapp/bulk/prepare', [WhatsAppBulkController::class, 'prepare']);
-    Route::post('/whatsapp/bulk/execute', [WhatsAppBulkController::class, 'execute']);
-
-    Route::get('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'index'])->name('whatsapp.campaigns');
-    Route::post('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'store']);
-    Route::post('/whatsapp-campaigns/send', [WhatsAppCampaignController::class, 'send']);
-  Route::get('/broadcast-groups', [BroadcastGroupController::class, 'index']);
-
-    Route::post('/broadcast-groups', [BroadcastGroupController::class, 'store']);
-    Route::put('/broadcast-groups/{id}', [BroadcastGroupController::class, 'update']);
-    Route::delete('/broadcast-groups/{id}', [BroadcastGroupController::class, 'destroy']);
+Route::post('/whatsapp/bulk/prepare', [WhatsAppBulkController::class, 'prepare']);
+Route::post('/whatsapp/bulk/execute', [WhatsAppBulkController::class, 'execute']);
+Route::get('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'index'])->name('whatsapp.campaigns');
+Route::post('/whatsapp-campaigns', [WhatsAppCampaignController::class, 'store']);
+Route::post('/whatsapp-campaigns/send', [WhatsAppCampaignController::class, 'send']);
+Route::get('/broadcast-groups', [BroadcastGroupController::class, 'index']);
+Route::post('/broadcast-groups', [BroadcastGroupController::class, 'store']);
+Route::put('/broadcast-groups/{id}', [BroadcastGroupController::class, 'update']);
+Route::delete('/broadcast-groups/{id}', [BroadcastGroupController::class, 'destroy']);
 Route::get('/whatsapp-broadcasts', [BroadcastGroupController::class, 'index']);
-
-    Route::delete(
-        '/broadcast-groups/{groupId}/contacts/{contactId}',
-        [BroadcastGroupController::class, 'removeContact']
-    );
-    Route::get('/whatsapp-broadcasts', function () {
-    return view('brodcast.index');
-})->middleware('auth');
+Route::delete('/broadcast-groups/{groupId}/contacts/{contactId}',[BroadcastGroupController::class, 'removeContact']);
+Route::get('/whatsapp-broadcasts', function () {return view('brodcast.index');})->middleware('auth');
 Route::get('/api/contacts', function () {
     return \App\Models\Contact::where('user_id', (string) auth()->id())
         ->select('_id', 'name', 'phone_number')
@@ -325,3 +324,13 @@ Route::post('/qr/reserve-code', function () {
 Route::get('/qr/{code}', [QrBuilderController::class, 'scan'])
     ->where('code', '[A-Za-z0-9]+');
 
+Route::post('/facebook/save-pages', [SocialAccountController::class, 'saveFacebookPages'])->name('facebook.save-pages')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/ajax/location-search', [AjaxSuggestionController::class, 'searchLocation']);
+    Route::get('/ajax/hashtag-suggestions', [AjaxSuggestionController::class, 'searchHashtag']);
+    Route::get('/ajax/mention-suggestions', [AjaxSuggestionController::class, 'searchMention']);
+});
+
+Route::post('/map-location', [AjaxSuggestionController::class, 'mapLocation']);
+Route::get('/post/{id}', [App\Http\Controllers\PostController::class, 'show'])->name('post.show');

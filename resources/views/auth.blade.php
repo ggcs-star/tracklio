@@ -107,7 +107,7 @@
 </head>
 
 <body x-data="{
-    mode: '{{ isset($token) ? 'reset' : (request()->routeIs('register.page') ? 'register' : 'login') }}',
+    mode: '{{ isset($token) ? 'reset' : (request()->routeIs('register.page') ? 'register' : (request()->routeIs('password.request') ? 'forgot' : 'login')) }}',
     showPassword: false,
     showConfirmPassword: false
 }"
@@ -219,60 +219,71 @@ class="bg-gray-50 text-gray-800">
                 </div>
                 @endif
 <!-- FORGOT PASSWORD FORM -->
-<div x-show="mode === 'forgot'" x-transition class="space-y-6">
+                <div x-show="mode === 'forgot'" x-transition class="space-y-6">
 
-    <h2 class="text-xl font-bold text-center mb-6">Forgot Password</h2>
+                    <h2 class="text-xl font-bold text-center mb-6">Forgot Password</h2>
+                    @if (session('status'))
+                        <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                            <i class="fas fa-check-circle mr-2"></i> {{ session('status') }}
+                        </div>
+                    @endif
 
-    <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
-        @csrf
+                    @if ($errors->any())
+                        <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                            <i class="fas fa-exclamation-circle mr-2"></i> {{ $errors->first() }}
+                        </div>
+                    @endif
 
-        <div>
-            <label class="block text-sm font-medium mb-2">Email Address</label>
-            <input type="email" name="email" required
-                   class="input-field w-full rounded-xl py-3.5 px-4">
-        </div>
+                    <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+                        @csrf
 
-        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
-            Send Reset Link
-        </button>
-    </form>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Address</label>
+                            <input type="email" name="email" required
+                                class="input-field w-full rounded-xl py-3.5 px-4">
+                        </div>
 
-    <p class="text-sm text-center">
-        <a href="#" @click.prevent="mode = 'login'" class="text-indigo-600 font-semibold">
-            Back to Login
-        </a>
-    </p>
-</div>
-@if(isset($token))
-<div x-show="mode === 'reset'" x-transition class="space-y-6">
+                        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
+                            Send Reset Link
+                        </button>
+                    </form>
 
-    <h2 class="text-xl font-bold text-center mb-6">Reset Password</h2>
+                    <p class="text-sm text-center">
+                        <a href="#" @click.prevent="mode = 'login'" class="text-indigo-600 font-semibold">
+                            Back to Login
+                        </a>
+                    </p>
+                </div>
+                @if(isset($token))
+                <div x-show="mode === 'reset'" x-transition class="space-y-6">
 
-    <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
-        @csrf
-        <input type="hidden" name="token" value="{{ $token }}">
+                    <h2 class="text-xl font-bold text-center mb-6">Reset Password</h2>
 
-        <div>
-            <input type="email" name="email" value="{{ $email }}" required
-                   class="input-field w-full rounded-xl py-3.5 px-4">
-        </div>
+                    <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
+                        @csrf
+                        <input type="hidden" name="token" value="{{ $token }}">
 
-        <div>
-            <input type="password" name="password" placeholder="New Password" required
-                   class="input-field w-full rounded-xl py-3.5 px-4">
-        </div>
+                        <div>
+                            <input type="email" name="email" value="{{ $email }}" required
+                                class="input-field w-full rounded-xl py-3.5 px-4">
+                        </div>
 
-        <div>
-            <input type="password" name="password_confirmation" placeholder="Confirm Password" required
-                   class="input-field w-full rounded-xl py-3.5 px-4">
-        </div>
+                        <div>
+                            <input type="password" name="password" placeholder="New Password" required
+                                class="input-field w-full rounded-xl py-3.5 px-4">
+                        </div>
 
-        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
-            Reset Password
-        </button>
-    </form>
-</div>
-@endif
+                        <div>
+                            <input type="password" name="password_confirmation" placeholder="Confirm Password" required
+                                class="input-field w-full rounded-xl py-3.5 px-4">
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full text-white py-3.5 rounded-xl font-semibold">
+                            Reset Password
+                        </button>
+                    </form>
+                </div>
+                @endif
 
                 <!-- LOGIN FORM -->
                 <div x-show="mode === 'login'" x-transition>

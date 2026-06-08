@@ -13,18 +13,34 @@ class Post extends Model
         'user_id',
         'content',
         'media_url',
+        'media_path',
+        'media_paths',
         'platforms',     
         'status',        
         'facebook_page_id', 
-        'scheduled_at',     
+        'facebook_post_id',
+        'facebook_post_type',
+        'instagram_post_id',
+        'youtube_video_id',
+        'youtube_account_id',
+        'ig_post_type',
+        'scheduled_at',
+        'published_at',
+        'error_message',   
+        'location_id',
+        'location_name', 
+        'instagram_profile_id',
     ];
 
     protected $dates = [
         'scheduled_at',
         'created_at',
         'updated_at',
+        
     ];
-
+    // protected $casts = [
+    //     'media_paths' => 'array',
+    // ];
     /* ===============================
        SCOPES
     =============================== */
