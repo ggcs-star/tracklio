@@ -158,7 +158,7 @@
 
     <span class="font-medium">Contacts</span>
 </a>
-<a href="{{ url('/whatsapp-broadcasts') }}"
+<!-- <a href="{{ url('/whatsapp-broadcasts') }}"
    class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
           {{ request()->is('whatsapp-broadcasts*')
              ? 'bg-gradient-to-r from-[#4C6FFF] to-[#8B5CF6] text-white shadow-lg shadow-blue-500/25'
@@ -171,8 +171,8 @@
     </svg>
 
     <span class="font-medium">WhatsApp Broadcast</span>
-</a>
-
+</a> -->
+<!-- 
 
 <a href="{{ url('/whatsapp-accounts') }}"
    class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -202,7 +202,7 @@
     </svg>
 
     <span class="font-medium">WhatsApp Campaigns</span>
-</a>
+</a> -->
 
 <a href="{{ route('bio.index') }}"
    class="pro-feature flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
